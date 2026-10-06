@@ -1,12 +1,16 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
 import pandas as pd
 
 from sklearn.metrics import (
     accuracy_score,
+    f1_score,
     precision_score,
     recall_score,
-    f1_score,
+)
+
+from app.services.model_selection_service import (
+    select_best_classification_model,
 )
 
 
@@ -24,12 +28,15 @@ def evaluate_classification_models(
         - Recall
         - F1 score
 
-    The best model is selected using the highest F1 score.
-
     Args:
-        trained_models: Dictionary of fitted model pipelines.
-        X_test: Test feature data.
-        y_test: Test target values.
+        trained_models:
+            Dictionary of fitted classification pipelines.
+
+        X_test:
+            Test feature data.
+
+        y_test:
+            Test target values.
 
     Returns:
         Dictionary containing metrics for every model and
@@ -76,15 +83,14 @@ def evaluate_classification_models(
         }
 
     if not results:
-        raise ValueError("No trained models were provided for evaluation.")
+        raise ValueError(
+            "No trained models were provided for evaluation."
+        )
 
-    best_model_name = max(
-        results,
-        key=lambda model_name: results[model_name]["f1"],
-    )
+    selection = select_best_classification_model(results)
 
     return {
         "models": results,
-        "best_model": best_model_name,
-        "best_metrics": results[best_model_name],
+        "best_model": selection["best_model"],
+        "best_metrics": selection["best_metrics"],
     }
