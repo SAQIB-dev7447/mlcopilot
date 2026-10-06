@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MLCopilot | Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .glass-panel {
+            background: rgba(27, 27, 35, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .active-glow {
+            box-shadow: 0 0 20px rgba(192, 193, 255, 0.15);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(192, 193, 255, 0.2);
+            border-radius: 10px;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .status-pulse {
+            animation: pulse-soft 2s infinite ease-in-out;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed-dim": "#ddb7ff",
+                      "outline-variant": "#464554",
+                      "on-primary-fixed": "#07006c",
+                      "primary": "#c0c1ff",
+                      "on-primary-fixed-variant": "#2f2ebe",
+                      "on-secondary-container": "#d6a9ff",
+                      "tertiary": "#ffb783",
+                      "on-secondary-fixed-variant": "#6900b3",
+                      "on-error": "#690005",
+                      "surface-variant": "#34343d",
+                      "secondary-container": "#6f00be",
+                      "on-background": "#e4e1ed",
+                      "inverse-surface": "#e4e1ed",
+                      "surface-container-low": "#1b1b23",
+                      "on-error-container": "#ffdad6",
+                      "primary-fixed-dim": "#c0c1ff",
+                      "surface-container-lowest": "#0d0d15",
+                      "on-tertiary-fixed": "#301400",
+                      "on-secondary-fixed": "#2c0051",
+                      "inverse-on-surface": "#303038",
+                      "surface-container": "#1f1f27",
+                      "on-tertiary-container": "#452000",
+                      "primary-fixed": "#e1e0ff",
+                      "surface-container-highest": "#34343d",
+                      "secondary-fixed": "#f0dbff",
+                      "tertiary-fixed-dim": "#ffb783",
+                      "on-secondary": "#490080",
+                      "primary-container": "#8083ff",
+                      "on-tertiary-fixed-variant": "#703700",
+                      "on-tertiary": "#4f2500",
+                      "background": "#13131b",
+                      "error-container": "#93000a",
+                      "tertiary-container": "#d97721",
+                      "error": "#ffb4ab",
+                      "surface": "#13131b",
+                      "on-surface": "#e4e1ed",
+                      "surface-tint": "#c0c1ff",
+                      "surface-container-high": "#292932",
+                      "on-primary-container": "#0d0096",
+                      "inverse-primary": "#494bd6",
+                      "on-primary": "#1000a9",
+                      "surface-dim": "#13131b",
+                      "tertiary-fixed": "#ffdcc5",
+                      "on-surface-variant": "#c7c4d7",
+                      "surface-bright": "#393841",
+                      "secondary": "#ddb7ff",
+                      "outline": "#908fa0"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "margin-container": "32px",
+                      "gutter": "24px",
+                      "section-padding": "64px",
+                      "panel-gap": "16px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "display-lg": ["Geist"],
+                      "body-md": ["Inter"],
+                      "mono-code": ["Geist"],
+                      "label-sm": ["Geist"],
+                      "headline-md": ["Geist"],
+                      "display-lg-mobile": ["Geist"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "mono-code": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary/30 min-h-screen flex overflow-hidden">
+<!-- Side Navigation Shell -->
+<aside class="hidden md:flex flex-col h-screen left-0 w-64 bg-surface-container-low/90 backdrop-blur-2xl border-r border-white/5 py-6 gap-panel-gap sticky top-0 shrink-0">
+<div class="px-6 mb-4">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">fluid_med</span>
+</div>
+<div>
+<h1 class="font-display-lg text-[20px] leading-none text-on-surface tracking-tight">MLCopilot</h1>
+<p class="font-label-sm text-outline">v2.4.0-pro</p>
+</div>
+</div>
+<div class="p-3 glass-panel rounded-xl flex items-center gap-3 mb-6">
+<div class="w-8 h-8 rounded-full bg-tertiary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-sm">hub</span>
+</div>
+<div>
+<p class="font-label-sm text-on-surface leading-tight">Core Engine</p>
+<p class="text-[10px] text-outline">Active Project</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1 custom-scrollbar overflow-y-auto">
+<!-- Active Tab: Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-container/20 text-secondary-fixed-dim border-r-2 border-secondary-fixed-dim translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-sm">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-label-sm">Agents</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-sm">Datasets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">science</span>
+<span class="font-label-sm">Experiments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">model_training</span>
+<span class="font-label-sm">Models</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-sm">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+<span class="font-label-sm">Deployments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full bg-primary-container text-on-primary-container font-label-sm py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Agent
+            </button>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-background">
+<!-- Background Atmosphere -->
+
+<!-- Top Navigation -->
+<header class="h-16 flex justify-between items-center w-full px-margin-container bg-surface/80 backdrop-blur-xl border-b border-white/10 z-50 shrink-0">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px] transition-colors group-focus-within:text-primary">search</span>
+<input class="bg-surface-container-highest/50 border-none rounded-full pl-10 pr-6 py-2 text-sm w-80 focus:ring-1 focus:ring-primary/50 text-on-surface-variant placeholder:text-outline transition-all" placeholder="Search experiments or agents..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined">apps</span>
+</button>
+<div class="h-8 w-px bg-white/10 mx-2"></div>
+<div class="flex items-center gap-3 cursor-pointer">
+<div class="text-right hidden sm:block">
+<p class="font-label-sm text-on-surface leading-none">Alex Rivera</p>
+<p class="text-[10px] text-primary">Senior ML Ops</p>
+</div>
+<div class="relative">
+<img alt="User profile photo with status indicator" class="w-9 h-9 rounded-full object-cover border border-white/10" data-alt="A professional headshot of a Hispanic male software engineer in his late 30s with a focused and intelligent expression. He is wearing a dark, minimalist tech-wear jacket. The background is a blurred, high-end office with soft bokeh lights in cool blue and purple tones, matching the futuristic MLCopilot brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjt26v7D3Ia_cpHoj3hExPpQaUeZHuZIkUrPZ78HTRR02PKr0suyS1VFYI9fA1myUmfTUBMgCelf7UlUCV67lZevuaD_FC_0_cFXqyIvGhv1LebpKATwG4ec_6XfFvVmNsCZH2PmRrG4dZUjYknq4YpH1yEVJAgOSExPLQfK8Zijvv3zvuoWqk3PGgkgr_EzaPe98n8W5V0uP9m9Nw9tavwyBkT2Ky7xnx34XRZ0G4VvkRtTKDn4lGbKQnxON_ihkeZzUl6zfVRHfU"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background status-pulse"></span>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="flex-1 overflow-y-auto p-margin-container custom-scrollbar relative z-10">
+<div class="max-w-[1400px] mx-auto space-y-panel-gap">
+<!-- Welcome Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-display-lg text-on-surface text-[32px] tracking-tight">System Overview</h2>
+<p class="font-body-md text-on-surface-variant max-w-lg">Monitoring 24 active agent instances across 4 distributed neural clusters.</p>
+</div>
+<div class="flex gap-3">
+<button class="glass-panel px-4 py-2 rounded-lg flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">upload_file</span>
+<span class="font-label-sm">Upload Dataset</span>
+</button>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-lg flex items-center gap-2 font-label-sm hover:opacity-90 active:scale-95 transition-all active-glow">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                            New Project
+                        </button>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-panel-gap">
+<!-- Stat 1 -->
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-secondary-container"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">dynamic_feed</span>
+</div>
+<span class="text-[10px] font-bold text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full">+12%</span>
+</div>
+<p class="font-label-sm text-outline uppercase tracking-widest mb-1">Active Projects</p>
+<p class="font-display-lg text-[28px] text-on-surface">14</p>
+</div>
+<!-- Stat 2 -->
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">storage</span>
+</div>
+<span class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">4.2 TB</span>
+</div>
+<p class="font-label-sm text-outline uppercase tracking-widest mb-1">Datasets Uploaded</p>
+<p class="font-display-lg text-[28px] text-on-surface">1,024</p>
+</div>
+<!-- Stat 3 -->
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-xl bg-secondary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary-fixed-dim">model_training</span>
+</div>
+<span class="text-[10px] font-bold text-outline bg-outline/10 px-2 py-0.5 rounded-full">Live</span>
+</div>
+<p class="font-label-sm text-outline uppercase tracking-widest mb-1">Models Trained</p>
+<p class="font-display-lg text-[28px] text-on-surface">85</p>
+</div>
+<!-- Stat 4 -->
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-xl bg-error-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-error">assessment</span>
+</div>
+<span class="text-[10px] font-bold text-error bg-error/10 px-2 py-0.5 rounded-full">New</span>
+</div>
+<p class="font-label-sm text-outline uppercase tracking-widest mb-1">Reports Generated</p>
+<p class="font-display-lg text-[28px] text-on-surface">242</p>
+</div>
+</div>
+<!-- Main Grid Layout -->
+<div class="grid grid-cols-12 gap-panel-gap">
+<!-- Performance Trends Chart -->
+<div class="col-span-12 lg:col-span-8 glass-panel rounded-2xl p-6 min-h-[400px] flex flex-col">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="font-headline-md text-on-surface">Model Performance Trends</h3>
+<p class="font-label-sm text-outline">Mean F1-score across all active production models</p>
+</div>
+<div class="flex bg-surface-container-highest/30 p-1 rounded-lg">
+<button class="px-3 py-1 rounded-md bg-primary/20 text-primary font-label-sm">Day</button>
+<button class="px-3 py-1 rounded-md text-outline font-label-sm hover:text-on-surface">Week</button>
+<button class="px-3 py-1 rounded-md text-outline font-label-sm hover:text-on-surface">Month</button>
+</div>
+</div>
+<div class="flex-1 flex items-end justify-between gap-2 relative">
+<!-- Simulated Chart Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+<div class="border-b border-outline w-full h-px"></div>
+<div class="border-b border-outline w-full h-px"></div>
+<div class="border-b border-outline w-full h-px"></div>
+<div class="border-b border-outline w-full h-px"></div>
+<div class="border-b border-outline w-full h-px"></div>
+</div>
+<!-- Bars/Lines visualization (CSS simulated) -->
+<div class="flex-1 flex items-end justify-around h-full pt-10 z-10">
+<div class="w-8 bg-gradient-to-t from-primary/5 to-primary rounded-t-lg transition-all hover:opacity-80" style="height: 60%"></div>
+<div class="w-8 bg-gradient-to-t from-primary/5 to-primary rounded-t-lg transition-all hover:opacity-80" style="height: 45%"></div>
+<div class="w-8 bg-gradient-to-t from-primary/5 to-primary rounded-t-lg transition-all hover:opacity-80" style="height: 75%"></div>
+<div class="w-8 bg-gradient-to-t from-primary/5 to-primary rounded-t-lg transition-all hover:opacity-80" style="height: 65%"></div>
+<div class="w-8 bg-gradient-to-t from-primary/5 to-primary rounded-t-lg transition-all hover:opacity-80" style="height: 90%"></div>
+<div class="w-8 bg-gradient-to-t from-primary/5 to-primary rounded-t-lg transition-all hover:opacity-80 active-glow" style="height: 85%"></div>
+<div class="w-8 bg-gradient-to-t from-primary/5 to-primary rounded-t-lg transition-all hover:opacity-80" style="height: 70%"></div>
+<div class="w-8 bg-gradient-to-t from-primary/5 to-primary rounded-t-lg transition-all hover:opacity-80" style="height: 80%"></div>
+</div>
+</div>
+<div class="flex justify-around mt-4">
+<span class="font-label-sm text-outline">08:00</span>
+<span class="font-label-sm text-outline">10:00</span>
+<span class="font-label-sm text-outline">12:00</span>
+<span class="font-label-sm text-outline">14:00</span>
+<span class="font-label-sm text-outline">16:00</span>
+<span class="font-label-sm text-outline">18:00</span>
+<span class="font-label-sm text-outline">20:00</span>
+<span class="font-label-sm text-outline">22:00</span>
+</div>
+</div>
+<!-- Radar Chart / Agent Activity -->
+<div class="col-span-12 lg:col-span-4 glass-panel rounded-2xl p-6 flex flex-col">
+<div class="mb-6">
+<h3 class="font-headline-md text-on-surface">Agent Activity</h3>
+<p class="font-label-sm text-outline">Resource allocation by agent type</p>
+</div>
+<div class="flex-1 flex items-center justify-center relative py-6">
+<!-- Radar Placeholder Visualization -->
+<div class="w-48 h-48 border border-outline/20 rounded-full flex items-center justify-center relative">
+<div class="w-32 h-32 border border-outline/20 rounded-full flex items-center justify-center">
+<div class="w-16 h-16 border border-outline/20 rounded-full"></div>
+</div>
+<!-- Spokes -->
+<div class="absolute inset-0 flex items-center justify-center"><div class="w-full h-px bg-outline/10 rotate-45"></div></div>
+<div class="absolute inset-0 flex items-center justify-center"><div class="w-full h-px bg-outline/10 -rotate-45"></div></div>
+<div class="absolute inset-0 flex items-center justify-center"><div class="w-full h-px bg-outline/10 rotate-90"></div></div>
+<!-- Shape -->
+<svg class="absolute inset-0 w-full h-full" viewbox="0 0 100 100">
+<polygon fill="rgba(192, 193, 255, 0.4)" points="50,20 80,40 70,80 30,80 20,40" stroke="#c0c1ff" stroke-width="1.5"></polygon>
+</svg>
+</div>
+<!-- Labels -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 font-label-sm text-on-surface-variant">Compute</div>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 font-label-sm text-on-surface-variant">Memory</div>
+<div class="absolute top-1/2 left-0 -translate-y-1/2 font-label-sm text-on-surface-variant">Latent</div>
+<div class="absolute top-1/2 right-0 -translate-y-1/2 font-label-sm text-on-surface-variant">IO</div>
+</div>
+<div class="mt-6 space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="font-label-sm text-on-surface-variant">Supervisor</span>
+</div>
+<span class="font-label-sm text-on-surface">42%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary-container"></div>
+<span class="font-label-sm text-on-surface-variant">Optimization</span>
+</div>
+<span class="font-label-sm text-on-surface">31%</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity Feed -->
+<div class="col-span-12 lg:col-span-7 glass-panel rounded-2xl p-6">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-on-surface">Recent Activity</h3>
+<button class="text-primary font-label-sm hover:underline">View Log</button>
+</div>
+<div class="space-y-6">
+<div class="flex gap-4 group">
+<div class="shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-[20px]">person_search</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between mb-1">
+<p class="font-label-sm text-on-surface">Supervisor Agent initiated feature selection</p>
+<span class="text-[10px] text-outline">2m ago</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">System identified 12 redundant parameters in <span class="text-secondary-fixed-dim">Project X</span>. Autoreduction protocol enabled.</p>
+</div>
+</div>
+<div class="flex gap-4 group">
+<div class="shrink-0 w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center border border-tertiary/20 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-tertiary text-[20px]">verified</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between mb-1">
+<p class="font-label-sm text-on-surface">Model Agent achieved 94% accuracy</p>
+<span class="text-[10px] text-outline">14m ago</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">Validation set benchmark complete. Convergence achieved in 140 epochs for <span class="text-primary-fixed">DeepVision-BETA</span>.</p>
+</div>
+</div>
+<div class="flex gap-4 group">
+<div class="shrink-0 w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center border border-secondary-container/30 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary-fixed-dim text-[20px]">cloud_sync</span>
+</div>
+<div class="flex-1 border-b border-white/5 pb-4">
+<div class="flex justify-between mb-1">
+<p class="font-label-sm text-on-surface">Cluster Synchronization Complete</p>
+<span class="text-[10px] text-outline">45m ago</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">Weights distributed to edge nodes across Europe-West regions successfully.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Contextual Card -->
+<div class="col-span-12 lg:col-span-5 glass-panel rounded-2xl overflow-hidden relative group">
+<img alt="Neural network visualization" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" data-alt="A macro cinematic visualization of a neural network being constructed in real-time. Shimmering threads of glowing indigo and electric blue light connect nodes that pulse with energy against a deep black background. The style is hyper-realistic and futuristic, with a shallow depth of field focusing on the intricate interplay of data streams and light, perfectly representing the high-tech MLCopilot brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMwzOxfwkkovkDRkmzlYAB82mo8D0hVZzs0y3YMISOyvhF0R6x5jt8hVpULx_ZHPmlor95FM0Vf_7YsCjel4tjiGQRfUWi8huU4NXi5t_Q4ySBG4wSkOOFkdbtQJTpB0XB4eayw-FmGh5XEtIbS3DQeOeIYXl-tPuS-hcSnp2CZBTggpSB-fjyZF9v9Yx5DI_TtxjAOv5BFbTsRXZBm3Jg7DU1me3wrKrEGG5H63f_1ZoEBrqk232oGKfvgE9O7RPn2H0CqeYpiIgI"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-surface-container-low/60 to-transparent"></div>
+<div class="relative p-8 h-full flex flex-col justify-end">
+<span class="w-fit bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4">Pro Insight</span>
+<h3 class="font-headline-md text-on-surface mb-2">Optimize Pipeline Efficiency</h3>
+<p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Our AI suggests a 22% latency reduction by switching to Int8 quantization for your current active deployment.</p>
+<button class="w-fit glass-panel border-white/20 px-6 py-2.5 rounded-lg font-label-sm text-on-surface hover:bg-white/10 transition-all">
+                                Run Optimization Analysis
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Nav Bar (Bottom) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface/90 backdrop-blur-xl border-t border-white/10 flex justify-around items-center px-4 z-[100]">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="text-[10px] font-medium">Projects</span>
+</button>
+<div class="relative -top-6">
+<button class="w-14 h-14 bg-primary-container text-on-primary-container rounded-full shadow-lg shadow-primary/20 flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+</div>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">assessment</span>
+<span class="text-[10px] font-medium">Reports</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</button>
+</nav>
+<script>
+        // Micro-interactions for dashboard elements
+        document.querySelectorAll('.glass-panel').forEach(panel => {
+            panel.addEventListener('mouseenter', () => {
+                panel.style.transition = 'all 0.3s ease';
+                panel.style.borderColor = 'rgba(192, 193, 255, 0.2)';
+            });
+            panel.addEventListener('mouseleave', () => {
+                panel.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-[1.02]');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-[1.02]');
+        });
+    </script>
+</body></html>

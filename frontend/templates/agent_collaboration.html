@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MLCopilot | Agent Collaboration Brain</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#ddb7ff",
+                    "outline-variant": "#464554",
+                    "on-primary-fixed": "#07006c",
+                    "primary": "#c0c1ff",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "on-secondary-container": "#d6a9ff",
+                    "tertiary": "#ffb783",
+                    "on-secondary-fixed-variant": "#6900b3",
+                    "on-error": "#690005",
+                    "surface-variant": "#34343d",
+                    "secondary-container": "#6f00be",
+                    "on-background": "#e4e1ed",
+                    "inverse-surface": "#e4e1ed",
+                    "surface-container-low": "#1b1b23",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "surface-container-lowest": "#0d0d15",
+                    "on-tertiary-fixed": "#301400",
+                    "on-secondary-fixed": "#2c0051",
+                    "inverse-on-surface": "#303038",
+                    "surface-container": "#1f1f27",
+                    "on-surface": "#e4e1ed",
+                    "surface-tint": "#c0c1ff",
+                    "surface-container-high": "#292932",
+                    "on-primary-container": "#0d0096",
+                    "inverse-primary": "#494bd6",
+                    "on-primary": "#1000a9",
+                    "surface-dim": "#13131b",
+                    "tertiary-fixed": "#ffdcc5",
+                    "on-surface-variant": "#c7c4d7",
+                    "surface-bright": "#393841",
+                    "secondary": "#ddb7ff",
+                    "outline": "#908fa0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "margin-container": "32px",
+                    "gutter": "24px",
+                    "section-padding": "64px",
+                    "panel-gap": "16px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Geist"],
+                    "body-md": ["Inter"],
+                    "mono-code": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "headline-md": ["Geist"],
+                    "display-lg-mobile": ["Geist"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "mono-code": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #13131b;
+            color: #e4e1ed;
+            overflow: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(27, 27, 35, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .node-pulse {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 2px #c0c1ff); opacity: 0.8; }
+            50% { filter: drop-shadow(0 0 12px #c0c1ff); opacity: 1; }
+        }
+
+        .communication-line {
+            stroke-dasharray: 10;
+            animation: dash 20s linear infinite;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: -1000; }
+        }
+
+        .agent-active-gradient {
+            background: linear-gradient(to right, #c0c1ff, #ddb7ff);
+        }
+
+        /* Custom scrollbar for glass panels */
+        .glass-scroll::-webkit-scrollbar { width: 4px; }
+        .glass-scroll::-webkit-scrollbar-track { background: transparent; }
+        .glass-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    </style>
+</head>
+<body class="font-body-md text-body-md h-screen w-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center w-full px-margin-container h-16 fixed top-0 z-50">
+<div class="flex items-center gap-8">
+<span class="font-display-lg text-display-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">MLCopilot</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">System Overview</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">Agent Brain</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Logs</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-all active:opacity-80">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full"></span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-all active:opacity-80">apps</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="User profile photo with status indicator" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWDKfe1yK1IAcCynfWzye5rJ9q10GkpdNdp_5JLqCd8f6AyMQuKOhIuqnBF-K3oicbDw20UWB9V7w_I_TM_C3XLFWma3fYm6B2RgLRrXpZUdgtasmQcYKkpayggX25A54hbmIKQl3TQjOGSDzidzGBQeOlr1mmt53J-oCcPb0ZeAammX2-jm3cTX2PKmomZbUKJCeiMQwMYl_Hl3FnIrcO2Sut3m_xYEkTGjlFMFGmU4kVceLPkNJTS-1cbny2U21NQIdM_oGDgAYc"/>
+</div>
+</div>
+</header>
+<div class="flex h-full pt-16">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low/90 backdrop-blur-2xl border-r border-white/5 flex flex-col h-full py-6 gap-panel-gap w-64 flex-shrink-0">
+<div class="px-6 mb-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[18px]">memory</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface">Core Engine</p>
+<p class="text-[10px] text-on-surface-variant opacity-60">Active Project</p>
+</div>
+</div>
+</div>
+<nav class="flex flex-col gap-1 px-3">
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200 group translate-x-1 active:translate-x-0">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200 group translate-x-1 active:translate-x-0">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+<span class="font-label-sm text-label-sm">Projects</span>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-container/20 text-secondary-fixed-dim border-r-2 border-secondary-fixed-dim transition-all duration-200 group translate-x-1 active:translate-x-0">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+<span class="font-label-sm text-label-sm">Agents</span>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200 group translate-x-1 active:translate-x-0">
+<span class="material-symbols-outlined text-[20px]">database</span>
+<span class="font-label-sm text-label-sm">Datasets</span>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200 group translate-x-1 active:translate-x-0">
+<span class="material-symbols-outlined text-[20px]">science</span>
+<span class="font-label-sm text-label-sm">Experiments</span>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200 group translate-x-1 active:translate-x-0">
+<span class="material-symbols-outlined text-[20px]">model_training</span>
+<span class="font-label-sm text-label-sm">Models</span>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200 group translate-x-1 active:translate-x-0">
+<span class="material-symbols-outlined text-[20px]">assessment</span>
+<span class="font-label-sm text-label-sm">Reports</span>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200 group translate-x-1 active:translate-x-0">
+<span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+<span class="font-label-sm text-label-sm">Deployments</span>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200 group translate-x-1 active:translate-x-0">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</button>
+</nav>
+<div class="mt-auto px-4">
+<button class="w-full py-3 rounded-xl bg-gradient-to-r from-primary-container to-secondary-container text-on-primary-container font-semibold flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                    New Agent
+                </button>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-grow relative overflow-hidden bg-surface-container-lowest">
+<!-- Animated Shader Background -->
+
+<!-- Network Graph SVG -->
+<svg class="absolute inset-0 w-full h-full z-10" viewbox="0 0 1000 800">
+<defs>
+<lineargradient id="commGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" style="stop-color:rgba(192, 193, 255, 0.1); stop-opacity:0"></stop>
+<stop offset="50%" style="stop-color:rgba(192, 193, 255, 0.8); stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:rgba(192, 193, 255, 0.1); stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<!-- Communication Lines -->
+<path class="communication-line stroke-primary/30" d="M500 400 L300 250" fill="none" stroke-width="1.5"></path>
+<path class="communication-line stroke-primary/30" d="M500 400 L700 250" fill="none" stroke-width="1.5"></path>
+<path class="communication-line stroke-primary/30" d="M500 400 L500 150" fill="none" stroke-width="1.5"></path>
+<path class="communication-line stroke-secondary/30" d="M500 400 L300 550" fill="none" stroke-width="1.5"></path>
+<path class="communication-line stroke-secondary/30" d="M500 400 L700 550" fill="none" stroke-width="1.5"></path>
+<path class="communication-line stroke-outline-variant" d="M300 250 L500 150" fill="none" stroke-dasharray="4" stroke-width="1"></path>
+<path class="communication-line stroke-outline-variant" d="M700 250 L500 150" fill="none" stroke-dasharray="4" stroke-width="1"></path>
+<!-- Nodes -->
+<!-- Supervisor (Center) -->
+<g class="cursor-pointer group">
+<circle class="fill-surface-container-high stroke-primary/50 node-pulse" cx="500" cy="400" r="45" stroke-width="2"></circle>
+<text class="fill-primary font-bold text-sm pointer-events-none" text-anchor="middle" x="500" y="405">SUPERVISOR</text>
+<circle class="fill-transparent stroke-primary/20 scale-0 group-hover:scale-110 transition-transform duration-300" cx="500" cy="400" r="50" stroke-width="1"></circle>
+</g>
+<!-- Business Agent -->
+<g class="cursor-pointer group">
+<circle class="fill-surface-container-high stroke-secondary/40" cx="300" cy="250" r="35" stroke-width="2"></circle>
+<text class="fill-secondary text-xs pointer-events-none" text-anchor="middle" x="300" y="255">BUSINESS</text>
+</g>
+<!-- Dataset Agent -->
+<g class="cursor-pointer group">
+<circle class="fill-surface-container-high stroke-tertiary/40" cx="700" cy="250" r="35" stroke-width="2"></circle>
+<text class="fill-tertiary text-xs pointer-events-none" text-anchor="middle" x="700" y="255">DATASET</text>
+</g>
+<!-- Model Agent -->
+<g class="cursor-pointer group">
+<circle class="fill-surface-container-high stroke-primary-fixed-dim/40" cx="500" cy="150" r="35" stroke-width="2"></circle>
+<text class="fill-primary-fixed-dim text-xs pointer-events-none" text-anchor="middle" x="500" y="155">MODEL</text>
+</g>
+<!-- Ops Agent -->
+<g class="cursor-pointer group">
+<circle class="fill-surface-container-high stroke-outline-variant" cx="300" cy="550" r="35" stroke-width="2"></circle>
+<text class="fill-on-surface-variant text-xs pointer-events-none" text-anchor="middle" x="300" y="555">OPS</text>
+</g>
+<!-- Security Agent -->
+<g class="cursor-pointer group">
+<circle class="fill-surface-container-high stroke-error/40" cx="700" cy="550" r="35" stroke-width="2"></circle>
+<text class="fill-error text-xs pointer-events-none" text-anchor="middle" x="700" y="555">SECURITY</text>
+</g>
+</svg>
+<!-- Interactive HUD Overlays -->
+<div class="absolute top-8 left-8 z-20 flex flex-col gap-4">
+<div class="glass-panel p-4 rounded-xl border-l-4 border-primary">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">BRAIN ACTIVITY</p>
+<div class="flex items-center gap-4">
+<div>
+<p class="font-display-lg text-headline-md text-primary">8.4k</p>
+<p class="text-[10px] text-on-surface-variant">OPS/SEC</p>
+</div>
+<div class="w-16 h-8 flex items-end gap-0.5">
+<div class="w-full bg-primary/20 h-1/2"></div>
+<div class="w-full bg-primary/20 h-3/4"></div>
+<div class="w-full bg-primary/40 h-1/2"></div>
+<div class="w-full bg-primary h-full"></div>
+</div>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-3">SYSTEM STATUS</p>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-center gap-8">
+<span class="text-[12px] text-on-surface-variant">Latency</span>
+<span class="text-[12px] text-primary font-mono-code">12ms</span>
+</div>
+<div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-1/4 h-full bg-primary"></div>
+</div>
+<div class="flex justify-between items-center gap-8">
+<span class="text-[12px] text-on-surface-variant">Cognitive Load</span>
+<span class="text-[12px] text-secondary font-mono-code">42%</span>
+</div>
+<div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[42%] h-full bg-secondary"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Debate Panel (Right Side) -->
+<div class="absolute top-8 right-8 bottom-8 w-80 z-20 flex flex-col gap-4">
+<div class="glass-panel flex-grow rounded-xl flex flex-col overflow-hidden border-t-2 border-primary-container">
+<div class="p-4 border-b border-white/5 bg-white/5">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Agent Debate</h3>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] rounded uppercase font-bold tracking-wider">Live</span>
+</div>
+<p class="text-[12px] text-on-surface-variant italic">Decision: Hyperparameter Optimization Strategy for Model-V4</p>
+</div>
+<div class="flex-grow overflow-y-auto p-4 glass-scroll flex flex-col gap-4">
+<!-- Argument 1 -->
+<div class="p-3 rounded-lg bg-surface-container-high/50 border border-white/5">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-6 h-6 rounded-full bg-tertiary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-[14px]">database</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary">Dataset Agent</span>
+<span class="ml-auto text-[10px] text-on-surface-variant">2m ago</span>
+</div>
+<p class="text-[13px] text-on-surface leading-relaxed">"Suggesting a focus on Layer 3 dropout rates. Dataset variance is high in the validation set."</p>
+</div>
+<!-- Argument 2 -->
+<div class="p-3 rounded-lg bg-surface-container-high/50 border border-white/5">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[14px]">payments</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">Business Agent</span>
+<span class="ml-auto text-[10px] text-on-surface-variant">1m ago</span>
+</div>
+<p class="text-[13px] text-on-surface leading-relaxed">"Counter-proposal: Prioritize inference latency. Marketing requirements specify sub-100ms response."</p>
+</div>
+<!-- Consensus Indicator -->
+<div class="mt-4 pt-4 border-t border-white/5">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-3 uppercase tracking-tighter">Voting Cluster</p>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<div class="flex-grow">
+<div class="flex justify-between text-[11px] mb-1">
+<span>Option A (Accuracy)</span>
+<span class="text-primary">64%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[64%] h-full bg-primary"></div>
+</div>
+</div>
+<div class="flex -space-x-2">
+<div class="w-5 h-5 rounded-full border border-surface bg-tertiary"></div>
+<div class="w-5 h-5 rounded-full border border-surface bg-primary-fixed-dim"></div>
+<div class="w-5 h-5 rounded-full border border-surface bg-outline-variant"></div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex-grow">
+<div class="flex justify-between text-[11px] mb-1">
+<span>Option B (Speed)</span>
+<span class="text-secondary">36%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[36%] h-full bg-secondary"></div>
+</div>
+</div>
+<div class="flex -space-x-2">
+<div class="w-5 h-5 rounded-full border border-surface bg-secondary"></div>
+<div class="w-5 h-5 rounded-full border border-surface bg-error"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-primary/5 border-t border-primary/20">
+<div class="flex items-center gap-3">
+<div class="flex-grow">
+<p class="text-[11px] text-primary font-bold">CONSENSUS REACHED</p>
+<p class="text-[13px] text-on-surface">Option A selected with constraints.</p>
+</div>
+<button class="px-4 py-2 bg-primary text-on-primary text-[12px] font-bold rounded-lg shadow-lg shadow-primary/20">APPLY</button>
+</div>
+</div>
+</div>
+<!-- Footer Mini Card -->
+<div class="glass-panel p-4 rounded-xl flex items-center gap-4">
+<div class="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface">Active Session</p>
+<p class="text-[11px] text-on-surface-variant font-mono-code">TS-942-BETA-AGENT-SYNC</p>
+</div>
+</div>
+</div>
+<!-- Bottom Control HUD -->
+<div class="absolute bottom-8 left-8 right-96 z-20">
+<div class="glass-panel p-4 rounded-2xl flex items-center justify-between">
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">Node Focus</span>
+<span class="text-primary font-display-lg text-[20px]">Supervisor Mainframe</span>
+</div>
+<div class="h-10 w-px bg-white/10"></div>
+<div class="flex gap-4">
+<button class="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-container-high border border-white/5 hover:border-primary/50 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">zoom_in</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-container-high border border-white/5 hover:border-primary/50 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">filter_center_focus</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-container-high border border-white/5 hover:border-primary/50 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant uppercase">Network Health</p>
+<p class="text-sm font-bold text-green-400">OPTIMAL</p>
+</div>
+<div class="flex gap-2">
+<div class="w-1 h-6 bg-primary rounded-full"></div>
+<div class="w-1 h-4 bg-primary/40 rounded-full mt-auto"></div>
+<div class="w-1 h-7 bg-primary rounded-full"></div>
+<div class="w-1 h-5 bg-primary/60 rounded-full mt-auto"></div>
+<div class="w-1 h-8 bg-primary rounded-full"></div>
+</div>
+<button class="px-6 py-2.5 rounded-xl bg-surface-container-high text-on-surface font-semibold border border-white/10 hover:bg-surface-variant transition-all">
+                            PAUSE SYNC
+                        </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Background Decoration Elements -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none z-[-1] overflow-hidden">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/5 blur-[120px] rounded-full"></div>
+</div>
+<script>
+        // Micro-interactions for nodes
+        document.querySelectorAll('g.cursor-pointer').forEach(node => {
+            node.addEventListener('mouseenter', () => {
+                const circle = node.querySelector('circle');
+                if (circle) circle.style.filter = 'drop-shadow(0 0 15px currentColor)';
+            });
+            node.addEventListener('mouseleave', () => {
+                const circle = node.querySelector('circle');
+                if (circle) circle.style.filter = 'none';
+            });
+        });
+
+        // Simulating debate live updates
+        const debatePanel = document.querySelector('.glass-scroll');
+        const agents = [
+            { name: 'Ops Agent', color: 'text-outline-variant', icon: 'settings' },
+            { name: 'Model Agent', color: 'text-primary-fixed-dim', icon: 'model_training' },
+            { name: 'Security Agent', color: 'text-error', icon: 'security' }
+        ];
+
+        const quotes = [
+            "Validated hardware acceleration compatibility for the proposed changes.",
+            "Gradient descent parameters might need adjustment for this new scale.",
+            "Security handshake verified for the data pipeline upgrade.",
+            "Resource allocation is currently at 88% capacity. Proceed with caution."
+        ];
+
+        function addMessage() {
+            const agent = agents[Math.floor(Math.random() * agents.length)];
+            const quote = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            const div = document.createElement('div');
+            div.className = 'p-3 rounded-lg bg-surface-container-high/50 border border-white/5 opacity-0 translate-y-4 transition-all duration-500';
+            div.innerHTML = `
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center">
+                        <span class="material-symbols-outlined ${agent.color} text-[14px]">${agent.icon}</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm ${agent.color}">${agent.name}</span>
+                    <span class="ml-auto text-[10px] text-on-surface-variant">just now</span>
+                </div>
+                <p class="text-[13px] text-on-surface leading-relaxed">"${quote}"</p>
+            `;
+            
+            debatePanel.insertBefore(div, debatePanel.firstChild);
+            setTimeout(() => {
+                div.classList.remove('opacity-0', 'translate-y-4');
+            }, 100);
+
+            if (debatePanel.children.length > 8) {
+                debatePanel.removeChild(debatePanel.lastChild);
+            }
+        }
+
+        setInterval(addMessage, 8000);
+    </script>
+</body></html>

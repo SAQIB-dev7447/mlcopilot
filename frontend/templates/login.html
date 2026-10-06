@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MLCopilot | Authentication</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #13131b;
+            color: #e4e1ed;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(31, 31, 39, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .auth-gradient-bg {
+            background: radial-gradient(circle at 20% 30%, rgba(192, 193, 255, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(111, 0, 190, 0.1) 0%, transparent 50%);
+        }
+        .glow-effect {
+            box-shadow: 0 0 40px rgba(192, 193, 255, 0.1);
+        }
+        .agent-node {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#d97721",
+                        "primary": "#c0c1ff",
+                        "surface-container-lowest": "#0d0d15",
+                        "error-container": "#93000a",
+                        "surface-container-highest": "#34343d",
+                        "error": "#ffb4ab",
+                        "outline-variant": "#464554",
+                        "primary-container": "#8083ff",
+                        "surface-container-high": "#292932",
+                        "on-tertiary-fixed": "#301400",
+                        "on-surface-variant": "#c7c4d7",
+                        "tertiary": "#ffb783",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "primary-fixed": "#e1e0ff",
+                        "secondary-container": "#6f00be",
+                        "on-tertiary-container": "#452000",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-secondary": "#490080",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-secondary-container": "#d6a9ff",
+                        "surface-dim": "#13131b",
+                        "inverse-surface": "#e4e1ed",
+                        "inverse-primary": "#494bd6",
+                        "surface-variant": "#34343d",
+                        "surface-container": "#1f1f27",
+                        "on-tertiary": "#4f2500",
+                        "on-background": "#e4e1ed",
+                        "on-surface": "#e4e1ed",
+                        "surface-tint": "#c0c1ff",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-primary": "#1000a9",
+                        "secondary-fixed-dim": "#ddb7ff",
+                        "on-secondary-fixed": "#2c0051",
+                        "surface-container-low": "#1b1b23",
+                        "surface": "#13131b",
+                        "secondary-fixed": "#f0dbff",
+                        "on-primary-fixed": "#07006c",
+                        "background": "#13131b",
+                        "surface-bright": "#393841",
+                        "outline": "#908fa0",
+                        "tertiary-fixed": "#ffdcc5",
+                        "on-primary-container": "#0d0096",
+                        "secondary": "#ddb7ff",
+                        "on-secondary-fixed-variant": "#6900b3",
+                        "inverse-on-surface": "#303038"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "16px",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "mono-code": ["Geist"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "display-lg-mobile": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "body-lg": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-body-md text-on-surface overflow-hidden">
+<main class="flex h-screen w-full relative">
+<!-- Left Side: AI Agent Illustration -->
+<section class="hidden lg:flex w-7/12 h-full bg-surface-container-low relative overflow-hidden items-center justify-center p-gutter">
+<div class="absolute inset-0 auth-gradient-bg opacity-50"></div>
+<!-- Collaborative Agent Network Visual -->
+<div class="relative w-full max-w-2xl aspect-square glass-panel rounded-xl p-8 flex items-center justify-center glow-effect">
+<div class="absolute inset-0 flex items-center justify-center opacity-20">
+<div class="w-full h-full border border-primary/20 rounded-full animate-pulse scale-90"></div>
+<div class="absolute w-3/4 h-3/4 border border-secondary/20 rounded-full animate-pulse scale-100"></div>
+</div>
+<div class="z-10 grid grid-cols-2 gap-8 relative">
+<!-- Supervisor Agent -->
+<div class="agent-node col-span-2 flex justify-center" style="animation-delay: 0s;">
+<div class="glass-panel p-6 rounded-xl flex flex-col items-center gap-3 border-t-2 border-primary-container">
+<span class="material-symbols-outlined text-primary text-4xl" data-weight="fill">supervisor_account</span>
+<span class="font-headline-md text-primary text-headline-md">Supervisor</span>
+<p class="font-label-sm text-on-surface-variant text-center max-w-[150px]">Orchestrating agent workflows and logic.</p>
+</div>
+</div>
+<!-- Model Agent -->
+<div class="agent-node flex justify-end" style="animation-delay: 1.5s;">
+<div class="glass-panel p-6 rounded-xl flex flex-col items-center gap-3 border-t-2 border-secondary">
+<span class="material-symbols-outlined text-secondary text-4xl" data-weight="fill">model_training</span>
+<span class="font-headline-md text-secondary text-headline-md">Model</span>
+<p class="font-label-sm text-on-surface-variant text-center max-w-[150px]">Fine-tuning performance parameters.</p>
+</div>
+</div>
+<!-- Data Agent -->
+<div class="agent-node flex justify-start" style="animation-delay: 3s;">
+<div class="glass-panel p-6 rounded-xl flex flex-col items-center gap-3 border-t-2 border-tertiary">
+<span class="material-symbols-outlined text-tertiary text-4xl" data-weight="fill">database</span>
+<span class="font-headline-md text-tertiary text-headline-md">Data</span>
+<p class="font-label-sm text-on-surface-variant text-center max-w-[150px]">Managing massive dataset pipelines.</p>
+</div>
+</div>
+</div>
+<!-- Connecting lines SVG -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0" xmlns="http://www.w3.org/2000/svg">
+<line stroke="rgba(192, 193, 255, 0.2)" stroke-width="1" x1="50%" x2="30%" y1="30%" y2="70%"></line>
+<line stroke="rgba(192, 193, 255, 0.2)" stroke-width="1" x1="50%" x2="70%" y1="30%" y2="70%"></line>
+<line stroke="rgba(192, 193, 255, 0.2)" stroke-width="1" x1="30%" x2="70%" y1="70%" y2="70%"></line>
+</svg>
+</div>
+<!-- Branding at Bottom Left -->
+<div class="absolute bottom-12 left-12">
+<h1 class="font-display-lg text-primary text-display-lg mb-2">MLCopilot</h1>
+<p class="font-body-lg text-on-surface-variant text-body-lg">The intelligent engine for multi-agent ecosystems.</p>
+</div>
+</section>
+<!-- Right Side: Auth Forms -->
+<section class="w-full lg:w-5/12 h-full flex items-center justify-center p-gutter bg-surface">
+<div class="w-full max-w-md">
+<!-- Toggle UI -->
+<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-1" id="auth-title">Welcome Back</h2>
+<p class="font-body-md text-body-md text-on-surface-variant" id="auth-subtitle">Log in to manage your agent network.</p>
+</div>
+<div class="text-right">
+<img alt="Brand Logo" class="w-12 h-12 rounded-lg opacity-80" data-alt="A stylized geometric logo for an AI technology company, featuring interlocking abstract shapes in shades of deep indigo, electric violet, and translucent glass. The logo sits on a dark background and has a soft outer glow, suggesting a digital and futuristic identity. High contrast and clean vector lines define its professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHYmP5sNmmfdqlr7Ja4vv_iA37W3mBMuPvWVzd9yk8b8CpFFSoZg_8qN80RZdPWGRzYuceo2Fa6kVVSbJoKGNj8RbIEVL-fBQU7VultKup9Ksjr0aXGJtfwMBWs4M-r_npZ7tH8Oh7H-KNxlMaBfT2IHw4IUt0VqVyMBYzHPJuWrC16im_2ITPJ4Q6NduL5S92K07DpDfEqSDd81Wg_S1IjUfP02Zxj7jZ3fdHWhfmxHBi8HQI4oQhmZNnfZl2soMe6aqwNuuQ22LO"/>
+</div>
+</div>
+<!-- Social Login Cluster -->
+<div class="flex flex-col gap-3 mb-8">
+<button class="w-full h-14 flex items-center justify-center gap-3 rounded-xl bg-surface-container-high border border-outline-variant hover:bg-surface-container-highest active:scale-[0.98] transition-all duration-200">
+<img alt="Google" class="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxbT2B9bMouJfHT7wdy6Wj-tDlLr485PbUh_TE4z1MBQE_7uXolS4QTQbf9lxXal1MzGkAXPoofrlCHKvz68HETNfTj61Ngi9g6JCOj1Uj5dNzxUHZTUVPMTCskX6oFACo6FaZ7ZmwCfEEY_xhfCVRiT7IsnBjoa4bwLYUObq2fdY-r7JMErOuh8jdHwcwipegcTBx18JdWh-TMwpZD1MHnEuwOcQp_AVaeZjCjXg-Z5_RqJSdMz7xHqlBasZS8O7IMUgJ9wI8IQkI"/>
+<span class="font-label-sm text-label-sm font-semibold">Sign in with Google</span>
+</button>
+<button class="w-full h-14 flex items-center justify-center gap-3 rounded-xl bg-surface-container-high border border-outline-variant hover:bg-surface-container-highest active:scale-[0.98] transition-all duration-200">
+<svg class="w-6 h-6 fill-on-surface" viewbox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path></svg>
+<span class="font-label-sm text-label-sm font-semibold">Sign in with GitHub</span>
+</button>
+</div>
+<div class="relative mb-8">
+<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant"></div></div>
+<div class="relative flex justify-center"><span class="bg-surface px-4 font-label-sm text-on-surface-variant">OR CONTINUE WITH EMAIL</span></div>
+</div>
+<!-- Auth Form Container -->
+<form class="space-y-6" id="auth-form">
+<div class="hidden space-y-6" id="register-fields">
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">Full Name</label>
+<input class="w-full h-12 bg-surface-container-low border border-outline-variant rounded-lg px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200" placeholder="John Doe" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">Email Address</label>
+<input class="w-full h-12 bg-surface-container-low border border-outline-variant rounded-lg px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200" placeholder="name@company.com" type="email"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">Password</label>
+<a class="font-label-sm text-primary hover:underline" href="#" id="forgot-password-link">Forgot password?</a>
+</div>
+<input class="w-full h-12 bg-surface-container-low border border-outline-variant rounded-lg px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200" placeholder="••••••••" type="password"/>
+</div>
+<button class="w-full h-14 bg-primary text-on-primary font-headline-md rounded-xl hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-primary/20" type="submit">
+<span id="submit-btn-text">Sign In</span>
+</button>
+</form>
+<p class="mt-8 text-center font-body-md text-on-surface-variant">
+<span id="toggle-text">Don't have an account?</span>
+<button class="text-primary font-semibold hover:underline ml-1" id="auth-toggle">Create Account</button>
+</p>
+<!-- Legal Footer -->
+<div class="mt-12 flex justify-center gap-6 font-label-sm text-on-surface-variant opacity-60">
+<a class="hover:text-on-surface transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-on-surface transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</section>
+</main>
+<script>
+        const authToggle = document.getElementById('auth-toggle');
+        const authTitle = document.getElementById('auth-title');
+        const authSubtitle = document.getElementById('auth-subtitle');
+        const registerFields = document.getElementById('register-fields');
+        const submitBtnText = document.getElementById('submit-btn-text');
+        const toggleText = document.getElementById('toggle-text');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        
+        let isLogin = true;
+
+        authToggle.addEventListener('click', () => {
+            isLogin = !isLogin;
+            
+            if (isLogin) {
+                authTitle.innerText = "Welcome Back";
+                authSubtitle.innerText = "Log in to manage your agent network.";
+                registerFields.classList.add('hidden');
+                submitBtnText.innerText = "Sign In";
+                toggleText.innerText = "Don't have an account?";
+                authToggle.innerText = "Create Account";
+                forgotPasswordLink.classList.remove('hidden');
+            } else {
+                authTitle.innerText = "Get Started";
+                authSubtitle.innerText = "Scale your AI collaboration today.";
+                registerFields.classList.remove('hidden');
+                submitBtnText.innerText = "Create Account";
+                toggleText.innerText = "Already have an account?";
+                authToggle.innerText = "Log In";
+                forgotPasswordLink.classList.add('hidden');
+            }
+        });
+
+        // Form submission prevent default
+        document.getElementById('auth-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log('Form submitted');
+        });
+    </script>
+</body></html>
