@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.api.routes.dataset import router as dataset_router
+from app.api.routes.training import router as training_router
 
 
 app = FastAPI(
@@ -11,6 +12,7 @@ app = FastAPI(
 
 
 app.include_router(dataset_router)
+app.include_router(training_router)
 
 
 @app.get("/")
