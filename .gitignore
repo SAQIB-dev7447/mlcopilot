@@ -1,34 +1,66 @@
+# ==============================
 # Reference folders / design assets
+# ==============================
+
 stitch_frontend_design_reference/
 
-# Node dependencies
-node_modules/
-.pnpm-store/
-.yarn/
 
-# Build outputs
-.next/
-out/
-build/
-dist/
+# ==============================
+# Python
+# ==============================
 
-# Environment variables
+__pycache__/
+*.py[cod]
+*.pyo
+*$py.class
+
+
+# ==============================
+# Virtual environments
+# ==============================
+
+.venv/
+venv/
+env/
+ENV/
+
+
+# ==============================
+# Environment variables / secrets
+# ==============================
+
 .env
+.env.*
+!.env.example
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 *.env
 
-# IDE & Editor files
+
+# ==============================
+# IDE / Editors
+# ==============================
+
 .vscode/
 .idea/
 *.swp
 *.swo
+
+
+# ==============================
+# OS
+# ==============================
+
 .DS_Store
 Thumbs.db
 
+
+# ==============================
 # Logs
+# ==============================
+
 logs/
 *.log
 npm-debug.log*
@@ -36,10 +68,77 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Python & virtual environment files
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
-ENV/
+
+# ==============================
+# Testing / Coverage
+# ==============================
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+
+# ==============================
+# Jupyter
+# ==============================
+
+.ipynb_checkpoints/
+
+
+# ==============================
+# Frontend / Node
+# ==============================
+
+node_modules/
+.pnpm-store/
+.yarn/
+
+.next/
+out/
+build/
+dist/
+
+
+# ==============================
+# ML generated files
+# ==============================
+
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.pt
+*.pth
+*.onnx
+
+
+# ==============================
+# Local datasets
+# ==============================
+
+backend/data/*
+!backend/data/.gitkeep
+
+
+# ==============================
+# Saved models
+# ==============================
+
+backend/saved_models/*
+!backend/saved_models/.gitkeep
+
+
+# ==============================
+# Generated reports
+# ==============================
+
+backend/reports/*
+!backend/reports/.gitkeep
+
+
+# ==============================
+# Runtime logs
+# ==============================
+
+backend/logs/*
+!backend/logs/.gitkeep
