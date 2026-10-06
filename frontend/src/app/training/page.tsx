@@ -229,7 +229,7 @@ export default function TrainingPage() {
                     ))}
                     {isTraining && <div className="animate-pulse text-primary mt-2">_</div>}
                   </div>
-                </div>
+                </div>  
               </div>
             </div>
           </main>
