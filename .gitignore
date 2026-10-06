@@ -115,12 +115,14 @@ dist/
 
 
 # ==============================
-# Local datasets
+# Local / runtime datasets
 # ==============================
 
-backend/data/*
+backend/data/uploads/*
+backend/data/*.csv
+!backend/data/demo_customer_churn.csv
+!backend/data/test_dataset_1.csv
 !backend/data/.gitkeep
-
 
 # ==============================
 # Saved models

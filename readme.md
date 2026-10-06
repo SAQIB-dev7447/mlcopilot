@@ -1,649 +1,426 @@
-# Product Requirements Document (PRD)
+# ![MLCopilot logo](images/logo.svg) MLCopilot
 
-# Project Name
+### Multi-Agent Conversational Machine Learning Automation Platform
 
-MLCopilot: Multi-Agent Conversational Machine Learning Automation Platform
+*Upload a dataset. Describe the problem. Receive a complete, explainable ML solution.*
 
----
-
-# 1. Product Overview
-
-MLCopilot is an AI-powered multi-agent platform that automates the complete Machine Learning lifecycle through conversational interactions.
-
-Instead of requiring users to manually perform data preprocessing, feature engineering, model selection, training, evaluation, and insight generation, the platform utilizes a team of intelligent agents that collaborate and make decisions similar to a real-world Data Science team.
-
-Users interact with the system through natural language and dataset uploads. The platform automatically plans, executes, explains, and documents the machine learning workflow.
-
----
-
-# 2. Problem Statement
-
-Developing machine learning solutions requires expertise in:
-
-* Data Cleaning
-* Missing Value Handling
-* Outlier Detection
-* Feature Engineering
-* Feature Selection
-* Model Selection
-* Hyperparameter Optimization
-* Model Evaluation
-* Business Interpretation
-
-Existing AutoML systems focus primarily on model training but provide limited transparency regarding decision-making and business reasoning.
-
-There is a need for an intelligent system capable of:
-
-* Understanding business requirements
-* Collaborating across specialized AI agents
-* Explaining decisions
-* Producing actionable insights
-* Automating end-to-end ML development
+[Overview](#-overview) •
+[Features](#-key-features) •
+[Architecture](#-system-architecture) •
+[Agents](#-the-13-agents) •
+[Workflow](#-agent-orchestration-workflow) •
+[Comparison](#-mlcopilot-vs-existing-automl-platforms) •
+[Tech Stack](#-technology-stack) •
+[Roadmap](#-roadmap)
 
 ---
 
-# 3. Vision
+## 📖 Overview
 
-To create a conversational AI Data Science team that transforms machine learning development into a simple chat-based experience.
+**MLCopilot** is an AI-powered, multi-agent platform that automates the complete machine learning lifecycle through natural-language conversation. Instead of manually performing preprocessing, feature engineering, model selection, training, evaluation, and insight generation, users work with a **team of 13 specialized agents** that collaborate, debate, and justify decisions like a real-world Data Science team.
 
-Goal:
-
-"Upload a dataset, describe the problem, and receive a complete machine learning solution with explanations and insights."
+> **Goal:** *"Upload a dataset, describe the problem, and receive a complete machine learning solution with explanations and insights."*
 
 ---
 
-# 4. Objectives
+## 🎯 Problem Statement
 
-## Primary Objectives
+Building ML solutions demands expertise across many disciplines:
 
-* Automate complete ML workflow
-* Enable conversational ML development
-* Provide explainable decision-making
-* Generate business insights automatically
-* Reduce dependency on ML expertise
+| Data Preparation | Modeling | Interpretation |
+|---|---|---|
+| Data cleaning | Model selection | Model evaluation |
+| Missing value handling | Hyperparameter optimization | Business interpretation |
+| Outlier detection | Feature selection | Explainability |
+| Feature engineering | Cross-validation | Reporting |
 
-## Secondary Objectives
+Existing AutoML tools focus mainly on **model training** and offer limited transparency or business reasoning. MLCopilot fills that gap by:
 
-* Increase model development speed
-* Improve transparency
-* Standardize preprocessing pipelines
-* Generate professional reports
-
----
-
-# 5. Target Users
-
-## Beginner Users
-
-Individuals with limited ML knowledge.
-
-Needs:
-
-* Simple interface
-* Automatic decisions
-* Clear explanations
-
-## Students
-
-Needs:
-
-* Learning support
-* Experimentation
-* Project development
-
-## Data Analysts
-
-Needs:
-
-* Faster workflow
-* Automated reporting
-
-## Small Businesses
-
-Needs:
-
-* Business predictions
-* Decision support systems
+- 🧠 Understanding business requirements from plain language
+- 🤝 Coordinating specialized AI agents
+- 🔍 Explaining every decision it makes
+- 💡 Producing actionable business insights
+- ⚙️ Automating the ML workflow end to end
 
 ---
 
-# 6. Core Concept
+## ✨ Key Features
 
-The platform operates as a collaborative AI team.
-
-Each agent specializes in a particular responsibility.
-
-Agents communicate, debate, justify decisions, and collaboratively construct the final ML pipeline.
-
----
-
-# 7. Multi-Agent Architecture
-
-## Supervisor Agent
-
-Responsibilities:
-
-* Orchestrates workflow
-* Assigns tasks
-* Collects results
-* Resolves conflicts
-
-Inputs:
-
-* User requirements
-* Dataset
-
-Outputs:
-
-* Execution plan
+| | Feature | Description |
+|---|---|---|
+| 💬 | **Conversational ML** | Build, explain, and inspect models through chat |
+| 🧑‍🤝‍🧑 | **Multi-Agent Collaboration** | Agents discuss, debate, and reach consensus |
+| 🔎 | **Auto Data Profiling** | Dataset summary, quality score, feature catalog |
+| 🧹 | **Automated Preprocessing** | Imputation, outlier handling, encoding, scaling |
+| 🏆 | **Model Selection with Reasoning** | Shortlists models and explains *why* |
+| 📊 | **Explainability** | SHAP / LIME feature importance and prediction explanations |
+| 📝 | **Automated Reports** | Dynamic PDF / DOCX / HTML reports for classification and regression |
+| 🧾 | **Decision Memory** | Full audit trail of every decision and reason |
+| 📦 | **Model Export** | Download trained models as `.pkl` |
 
 ---
 
-## Business Understanding Agent
+## 🏗️ System Architecture
 
-Responsibilities:
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Segoe UI, Arial","fontSize":"15px","primaryColor":"#e0f2fe","primaryBorderColor":"#0284c7","lineColor":"#0284c7"}}}%%
+flowchart TB
+    USER(["👤 <b>USER</b><br/>Business problem in natural language + Dataset upload"])
 
-* Understand user objectives
-* Identify business problem
-* Determine success metrics
+    subgraph PRES["🖥️ PRESENTATION LAYER · Next.js · Tailwind CSS · Plotly"]
+        direction LR
+        P1["💬 Chat Interface"]
+        P2["📊 Visualizations<br/>Histograms · Heatmaps · Boxplots"]
+        P3["📥 Reports & Downloads<br/>PDF · HTML · .pkl"]
+    end
 
-Example:
+    subgraph API["⚙️ API LAYER · FastAPI"]
+        direction LR
+        A1["🔐 Authentication<br/>Login · Roles"]
+        A2["📁 Project Management<br/>Projects · Sessions · Uploads"]
+        A3["🔌 REST Endpoints<br/>Chat · Training · Reports"]
+    end
 
-Input:
-"I want to predict customer churn."
+    subgraph AGENTS["🧠 AGENT LAYER · LangGraph Multi-Agent Orchestration"]
+        direction TB
+        SUP{{"🎛️ Supervisor / Orchestrator Agent"}}
+        subgraph DATA["📦 Data Understanding & Preparation"]
+            direction LR
+            B["🎯 Business"] --> D["🗄️ Dataset"] --> PL["📋 Planning"] --> DQ["🔍 Data Quality"] --> MV["🛠️ Missing Values"] --> FE["🧬 Feature Eng."]
+        end
+        subgraph MODEL["🏆 Modeling & Delivery"]
+            direction LR
+            MS["📊 Model Selection"] --> TR["🏋️ Training"] --> EV["📈 Evaluation"] --> EX["💡 Explainability"] --> IN["📑 Insight"] --> RP["📄 Report"]
+        end
+        MEM[("🧾 Decision Memory<br/>Decisions · Reasons · Audit trail")]
+        SUP --> DATA
+        DATA --> MODEL
+        SUP -.-> MEM
+    end
 
-Output:
+    subgraph SERV["🔧 SERVICES"]
+        direction LR
+        subgraph ML["📈 ML ENGINE"]
+            direction TB
+            M1["TrainerFactory + TrainingEngine"]
+            M2["scikit-learn · XGBoost<br/>LightGBM · CatBoost"]
+            M3["SHAP · LIME"]
+        end
+        subgraph LLM["🗣️ LLM LAYER"]
+            direction TB
+            L1["Qwen"]
+            L2["gpt-oss:20b"]
+        end
+        subgraph STORE["🗄️ STORAGE LAYER"]
+            direction TB
+            S1[("PostgreSQL<br/>Metadata")]
+            S2[("MinIO<br/>Datasets · Models · Reports")]
+        end
+    end
 
-Problem Type: Classification
-Business Goal: Retain Customers
-Metric: Recall
+    OUT(["✅ <b>FINAL OUTPUT</b><br/>Best model · Predictions · Explainability · Insights · Report"])
 
----
+    USER --> PRES
+    PRES <--> API
+    API <--> AGENTS
+    AGENTS <--> ML
+    AGENTS <--> LLM
+    AGENTS <--> STORE
+    MODEL --> OUT
 
-## Dataset Understanding Agent
+    classDef user fill:#bae6fd,stroke:#0369a1,stroke-width:2px,color:#0c4a6e;
+    classDef box fill:#e0f2fe,stroke:#0284c7,stroke-width:1.5px,color:#0c4a6e;
+    classDef sup fill:#ddd6fe,stroke:#7c3aed,stroke-width:2px,color:#4c1d95;
+    classDef mem fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e;
+    classDef db fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d;
+    classDef out fill:#bbf7d0,stroke:#15803d,stroke-width:2px,color:#14532d;
+    class USER user;
+    class P1,P2,P3,A1,A2,A3,B,D,PL,DQ,MV,FE,MS,TR,EV,EX,IN,RP,M1,M2,M3,L1,L2 box;
+    class SUP sup;
+    class MEM mem;
+    class S1,S2 db;
+    class OUT out;
 
-Responsibilities:
+    style PRES fill:#f0f9ff,stroke:#0ea5e9,stroke-width:2px
+    style API fill:#f0f9ff,stroke:#0ea5e9,stroke-width:2px
+    style AGENTS fill:#f5f3ff,stroke:#7c3aed,stroke-width:2px
+    style DATA fill:#ffffff,stroke:#38bdf8,stroke-dasharray:5 5
+    style MODEL fill:#ffffff,stroke:#38bdf8,stroke-dasharray:5 5
+    style SERV fill:#fafafa,stroke:#94a3b8,stroke-width:1px
+    style ML fill:#f0f9ff,stroke:#0ea5e9,stroke-width:2px
+    style LLM fill:#f0f9ff,stroke:#0ea5e9,stroke-width:2px
+    style STORE fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+```
 
-* Analyze dataset structure
-* Identify column types
-* Detect target variable
-* Generate dataset summary
+### Architecture Layers
 
-Outputs:
-
-* Feature catalog
-* Dataset profile
-
----
-
-## Data Quality Agent
-
-Responsibilities:
-
-* Detect missing values
-* Detect duplicates
-* Identify inconsistencies
-* Generate quality score
-
-Outputs:
-
-* Data quality report
-
----
-
-## Missing Value Agent
-
-Responsibilities:
-
-* Analyze null values
-* Select imputation strategy
-
-Strategies:
-
-* Mean
-* Median
-* Mode
-* KNN Imputation
-
-Outputs:
-
-* Imputation report
-
----
-
-## Outlier Agent
-
-Responsibilities:
-
-* Detect outliers
-
-Methods:
-
-* IQR
-* Z-Score
-* Isolation Forest
-
-Outputs:
-
-* Outlier report
-* Recommended action
-
----
-
-## Feature Engineering Agent
-
-Responsibilities:
-
-* Encoding
-* Scaling
-* Normalization
-* Date transformations
-
-Outputs:
-
-* Engineered features
-
----
-
-## Feature Selection Agent
-
-Responsibilities:
-
-* Remove irrelevant features
-* Rank importance
-
-Methods:
-
-* Correlation Analysis
-* Mutual Information
-* Recursive Feature Elimination
-
-Outputs:
-
-* Selected feature set
+| Layer | Responsibility | Technology |
+|---|---|---|
+| **Presentation** | Chat UI, charts, downloads | Next.js, Tailwind CSS, Plotly |
+| **API** | Auth, projects, orchestration entry point | FastAPI |
+| **Agent** | Multi-agent reasoning and collaboration | LangGraph |
+| **ML Engine** | Training, tuning, evaluation | scikit-learn, XGBoost, LightGBM, CatBoost |
+| **Explainability** | Model interpretation | SHAP, LIME |
+| **LLM** | Natural-language understanding and insights | Qwen, gpt-oss:20b |
+| **Storage** | Metadata and artifacts | PostgreSQL, MinIO |
 
 ---
 
-## Model Selection Agent
+## 👥 The 13 Agents
 
-Responsibilities:
+| # | Agent | Role / Responsibilities | Key Outputs |
+|:-:|---|---|---|
+| 1 | ⚙️ **Supervisor / Orchestrator** | Coordinates the workflow, manages agent execution and dependencies, resolves conflicts, ensures end-to-end completion | Execution plan, agent coordination, final result |
+| 2 | 🎯 **Business Agent** | Understands the business problem and goals from natural language; determines problem type, success metrics, constraints | Business understanding, problem type, success metric |
+| 3 | 🗄️ **Dataset Agent** | Analyzes dataset structure, data types, target column, feature distributions, basic statistics | Dataset summary, feature types, initial insights |
+| 4 | 📋 **Planning Agent** | Creates a step-by-step ML plan covering preprocessing, feature engineering, model candidates, evaluation strategy | Execution plan, model list, evaluation strategy |
+| 5 | 🔍 **Data Quality Agent** | Checks missing values, duplicates, outliers, inconsistencies; provides recommendations | Data quality report, cleaning recommendations |
+| 6 | 🛠️ **Missing Values Agent** | Selects and applies imputation (mean / median / mode / KNN / advanced) | Imputed dataset, imputation strategy |
+| 7 | 🧬 **Feature Engineering Agent** | Encoding, scaling, normalization, date transforms, feature selection, new features | Transformed dataset, engineered features |
+| 8 | 📊 **Model Selection Agent** | Picks suitable models based on problem type, data characteristics, business goals | Candidate models with reasoning |
+| 9 | 🏋️ **Training Agent** | Trains selected models via TrainerFactory + TrainingEngine; cross-validation and hyperparameter tuning | Trained models, training logs, tuned parameters |
+| 10 | 📈 **Evaluation Agent** | Evaluates models with appropriate metrics and compares performance | Evaluation metrics, model comparison, best model |
+| 11 | 💡 **Explainability Agent** | Generates SHAP / LIME explanations in business-friendly language | SHAP plots, feature importance, business insights |
+| 12 | 📑 **Insight Agent** | Converts results and explanations into actionable recommendations | Business insights, recommendations |
+| 13 | 📄 **Report Agent** | Generates the comprehensive ML report with methodology and performance | Final report (PDF / HTML), visualizations, summary |
 
-* Determine ML task
-* Select candidate models
-
-Supported Tasks:
-
-* Classification (Fully Supported)
-* Regression (Fully Supported - RandomForest, Ridge, XGBoost, etc.)
-* Clustering (Future)
-
-Outputs:
-
-* Model shortlist
-
----
-
-## Training Agent
-
-Responsibilities:
-
-* Train selected models
-* Cross-validation
-* Hyperparameter tuning
-
-Outputs:
-
-* Trained models
+> 🧾 A cross-cutting **Decision Memory** component records every decision, the reason, and the responsible agent for a fully explainable audit trail.
 
 ---
 
-## Evaluation Agent
+## 🔄 Agent Orchestration Workflow
 
-Responsibilities:
+```text
+User Input (business problem + dataset)
+        │
+        ▼
+1. Supervisor / Orchestrator Agent
+        │
+        ├─► 2. Business Agent ──► 3. Dataset Agent ──► 4. Planning Agent
+        │
+        ├─► 5. Data Quality Agent ──► 6. Missing Values Agent
+        │
+        └─► 7. Feature Engineering Agent
+                    │
+                    ▼
+8. Model Selection ──► 9. Training ──► 10. Evaluation
+                                              │
+                                              ▼
+11. Explainability ──► 12. Insight ──► 13. Report
+                                              │
+                                              ▼
+Final Output: best model · predictions · explainability · insights · report
+```
 
-* Compare models
-* Generate metrics
+### Step-by-Step
 
-Metrics:
-
-Classification:
-
-* Accuracy
-* Precision
-* Recall
-* F1
-
-Regression:
-
-* RMSE
-* MAE
-* R²
-
-Outputs:
-
-* Best model
-
----
-
-## Explainability Agent
-
-Responsibilities:
-
-* Explain model decisions
-
-Tools:
-
-* SHAP
-* LIME
-
-Outputs:
-
-* Feature importance
-* Prediction explanations
+1. **Upload** – User uploads a dataset and describes the problem.
+2. **Understand** – Business Agent determines problem type and success metric.
+3. **Plan** – Supervisor and Planning Agent build the workflow plan.
+4. **Prepare data** – Dataset, Data Quality, and Missing Values agents profile and clean.
+5. **Engineer features** – Feature Engineering Agent encodes, scales, and selects.
+6. **Model** – Model Selection, Training, and Evaluation agents choose and compare models.
+7. **Explain** – Explainability Agent generates SHAP / LIME insights.
+8. **Insight and report** – Insight and Report agents produce findings and the final report.
+9. **Remember** – Decision Memory stores the full reasoning trail.
+10. **Deliver** – User receives the complete ML solution.
 
 ---
 
-## Insight Generation Agent
+## 🗣️ Agent Collaboration Framework
 
-Responsibilities:
+Agents do not work in isolation. They collaborate in three phases:
 
-* Generate business insights
+| Phase | Description |
+|---|---|
+| **1. Discussion** | Agents share findings from their analysis |
+| **2. Debate** | Conflicting recommendations are challenged and justified |
+| **3. Consensus** | The Supervisor selects the final strategy |
 
-Example:
+**Example debate**
 
-"Customers with monthly charges above $80 show 42% higher churn probability."
+| Agent | Position |
+|---|---|
+| Outlier Agent | Remove outlier records |
+| Business Agent | Records represent VIP customers |
+| **Supervisor (Final Decision)** | **Retain the records** |
 
-Outputs:
+**Example decision log**
 
-* Natural language insights
-
----
-
-## Report Generation Agent
-
-Responsibilities:
-
-* Generate final reports
-
-Formats:
-
-* PDF
-* DOCX
-* HTML
-
-Outputs:
-
-* Professional ML report
+```text
+Decision : Median Imputation
+Reason   : Numerical feature with skewed distribution
+Agent    : Missing Values Agent
+```
 
 ---
 
-## Decision Memory Agent
+## 🆚 MLCopilot vs Existing AutoML Platforms
 
-Responsibilities:
+| Capability / Feature | **MLCopilot** | H2O AutoML | AutoGluon | DataRobot | AWS SageMaker Autopilot |
+|---|:-:|:-:|:-:|:-:|:-:|
+| Natural language business input | ✅ Core | ❌ | ❌ | ⚠️ Limited | ❌ |
+| Multi-agent architecture | ✅ 13 agents | ❌ | ❌ | ❌ | ❌ |
+| Automated problem-type identification | ✅ | ⚠️ Limited | ⚠️ Limited | ✅ | ✅ |
+| Dataset understanding and data quality analysis | ✅ Dedicated agents | ⚠️ Basic | ⚠️ Basic | ✅ | ✅ |
+| Automated feature engineering | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Model selection with reasoning | ✅ Explainable | ⚠️ Limited | ❌ | ✅ | ⚠️ Limited |
+| Classification and regression | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Clustering (unsupervised) | 🗓️ Planned | ✅ | ✅ | ✅ | ❌ |
+| Explainability (SHAP + AI interpretation) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Conversational interface | ✅ Core | ❌ | ❌ | ⚠️ Limited | ❌ |
+| Automated ML report | ✅ | ⚠️ Limited | ❌ | ✅ | ⚠️ Limited |
+| Model export / download | ✅ `.pkl` | ✅ | ✅ | ✅ | ✅ |
+| Extensible architecture (custom models) | ✅ TrainerFactory | ⚠️ Limited | ⚠️ Limited | ❌ | ⚠️ Limited |
+| End-to-end AI-driven ML workflow | ✅ | ❌ | ❌ | ⚠️ Partial | ⚠️ Partial |
 
-* Store all decisions
-* Maintain reasoning history
+### Gaps MLCopilot Fills
 
-Example:
-
-Decision:
-Median Imputation
-
-Reason:
-Numerical feature with skewed distribution
-
-Agent:
-Missing Value Agent
-
-Outputs:
-
-* Audit trail
-* Explainable workflow
-
----
-
-# 8. Agent Collaboration Framework
-
-Agents do not operate independently.
-
-They collaborate through:
-
-## Discussion Phase
-
-Agents share findings.
-
-## Debate Phase
-
-Conflicting recommendations are discussed.
-
-Example:
-
-Outlier Agent:
-Remove records.
-
-Business Agent:
-Records represent VIP customers.
-
-Final Decision:
-Retain records.
-
-## Consensus Phase
-
-Supervisor selects final strategy.
+- **Business-first input:** directly understands goals and translates them into an ML workflow.
+- **Modular reasoning:** agent-based orchestration instead of a single opaque pipeline.
+- **Transparent model choice:** explains *why* a model was selected for the business goal.
+- **Actionable reporting:** comprehensive reports with visuals, insights, and recommendations.
+- **Extensibility:** new models (clustering, time series) plug in via TrainerFactory.
 
 ---
 
-# 9. Functional Requirements
+## 🧰 Technology Stack
 
-## User Management
-
-* Registration
-* Login
-* Role Management
-
-## Project Management
-
-* Create Project
-* Upload Dataset
-* Save Sessions
-
-## Conversational Interface
-
-Users can ask:
-
-* Build a prediction model
-* Explain decisions
-* Show insights
-
-## Data Processing
-
-* Automatic profiling
-* Cleaning
-* Transformation
-
-## Visualization
-
-Generate:
-
-* Histograms
-* Heatmaps
-* Boxplots
-* Correlation Matrices
-
-## Model Development
-
-* Automatic training
-* Evaluation
-* Optimization
-
-## Reporting
-
-* Auto-generated reports (Dynamic for Classification/Regression)
-* AI-driven insights with robust JSON parsing
-
-## Deployment
-
-* Model Export (Download trained models as `.pkl`)
+| Category | Technologies |
+|---|---|
+| **Frontend** | Next.js, Tailwind CSS, Plotly |
+| **Backend** | FastAPI |
+| **Agent Framework** | LangGraph |
+| **Machine Learning** | Scikit-learn, XGBoost, LightGBM, CatBoost |
+| **Explainability** | SHAP, LIME |
+| **LLM** | Qwen, gpt-oss:20b |
+| **Database** | PostgreSQL |
+| **Object Storage** | MinIO |
+| **Deployment** | Local `.pkl` export (available) · Docker, Kubernetes (future) |
 
 ---
 
-# 10. Non-Functional Requirements
+## 📦 Functional Capabilities
 
-Performance:
+### User & Project Management
 
-* Dataset analysis under 60 seconds
+- Registration, login, role management
+- Create projects, upload datasets, save sessions
 
-Scalability:
+### Conversational Interface
 
-* Multiple projects simultaneously
+- "Build a prediction model"
+- "Explain decisions"
+- "Show insights"
 
-Security:
+### Data Processing & Visualization
 
-* Dataset encryption
-* Authentication
+- Automatic profiling, cleaning, transformation
+- Histograms, heatmaps, boxplots, correlation matrices
 
-Reliability:
+### Modeling & Reporting
 
-* Fault tolerance
-
-Usability:
-
-* Beginner-friendly interface
-
----
-
-# 11. System Workflow
-
-Step 1:
-User uploads dataset.
-
-Step 2:
-Business Understanding Agent gathers requirements.
-
-Step 3:
-Supervisor creates workflow plan.
-
-Step 4:
-Data agents process dataset.
-
-Step 5:
-Feature agents prepare data.
-
-Step 6:
-Model agents train and evaluate.
-
-Step 7:
-Insight Agent generates findings.
-
-Step 8:
-Report Agent creates final report.
-
-Step 9:
-Decision Memory Agent stores reasoning.
-
-Step 10:
-User receives complete ML solution.
+- Automatic training, evaluation, optimization
+- Dynamic reports for classification and regression
+- AI-driven insights with robust JSON parsing
+- Metrics: Accuracy, Precision, Recall, F1 (classification) · RMSE, MAE, R² (regression)
 
 ---
 
-# 12. Technology Stack
+## 🛡️ Non-Functional Requirements
 
-Frontend:
-
-* Next.js
-* Tailwind CSS
-* Plotly
-
-Backend:
-
-* FastAPI
-
-Agent Framework:
-
-* LangGraph
-
-Machine Learning:
-
-* Scikit-learn
-* XGBoost
-* LightGBM
-* CatBoost
-
-Database:
-
-* PostgreSQL
-
-Object Storage:
-
-* MinIO
-
-LLM:
-
-* Qwen
-* gpt-oss:20b
-
-Explainability:
-
-* SHAP
-* LIME
-
-Deployment:
-
-* Local .pkl Model Export (Available)
-* Docker (Future)
-* Kubernetes (Future)
+| Area | Target |
+|---|---|
+| ⚡ Performance | Dataset analysis in under 60 seconds |
+| 📈 Scalability | Multiple projects simultaneously |
+| 🔐 Security | Dataset encryption and authentication |
+| 🔁 Reliability | Fault tolerance |
+| 🙂 Usability | Beginner-friendly interface |
 
 ---
 
-# 13. Research Contributions
+## 👤 Target Users
 
-1. Conversational Machine Learning Development
-
-2. Multi-Agent Collaborative Decision Making
-
-3. Agent Debate Framework
-
-4. Explainable ML Workflow Generation
-
-5. Decision Memory Architecture
-
-6. Business-Aware Automated Model Development
+| User | Needs |
+|---|---|
+| 🌱 **Beginners** | Simple interface, automatic decisions, clear explanations |
+| 🎓 **Students** | Learning support, experimentation, project development |
+| 📊 **Data Analysts** | Faster workflow, automated reporting |
+| 🏪 **Small Businesses** | Business predictions, decision support |
 
 ---
 
-# 14. Success Metrics
+## 📏 Success Metrics
 
-Technical:
-
-* Pipeline automation rate
-* Training time reduction
-* Model accuracy
-
-User:
-
-* User satisfaction
-* Time saved
-* Report quality
-
-Research:
-
-* Publication potential
-* Novel agent collaboration strategies
+| Technical | User | Research |
+|---|---|---|
+| Pipeline automation rate | User satisfaction | Publication potential |
+| Training time reduction | Time saved | Novel agent collaboration strategies |
+| Model accuracy | Report quality | |
 
 ---
 
-# 15. Future Scope
+## 🔬 Research Contributions
 
-* Deep Learning Support
-* Time Series Forecasting
-* Reinforcement Learning
-* Autonomous Agent Improvement
-* Real-Time Model Deployment
-* Multi-Modal Data Support
-* Voice-Based ML Assistant
+1. Conversational machine learning development
+2. Multi-agent collaborative decision making
+3. Agent debate framework
+4. Explainable ML workflow generation
+5. Decision memory architecture
+6. Business-aware automated model development
 
 ---
 
-# Expected Outcome
+## 🚀 Getting Started
 
-An AI-powered virtual Data Science team capable of understanding business requirements, processing datasets, collaboratively constructing machine learning pipelines, generating insights, and delivering explainable predictive solutions through a conversational interface.
+> Replace the placeholders below with your actual repository details.
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/<your-username>/mlcopilot.git
+cd mlcopilot
+
+# 2. Backend
+cd backend
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --reload
+
+# 3. Frontend
+cd ../frontend
+npm install
+npm run dev
+```
+
+Then open `http://localhost:3000`, upload a dataset, and describe your problem in plain language.
+
+---
+
+## 🗺️ Roadmap
+
+- [x] Classification (fully supported)
+- [x] Regression (RandomForest, Ridge, XGBoost, etc.)
+- [x] Automated reports (PDF / HTML)
+- [x] `.pkl` model export
+- [ ] Clustering
+- [ ] Docker and Kubernetes deployment
+- [ ] Deep learning support
+- [ ] Time series forecasting
+- [ ] Reinforcement learning
+- [ ] Autonomous agent improvement
+- [ ] Real-time model deployment
+- [ ] Multi-modal data support
+- [ ] Voice-based ML assistant
+
+---
+
+## 🎯 Expected Outcome
+
+An AI-powered virtual Data Science team that understands business requirements, processes datasets, collaboratively builds machine learning pipelines, generates insights, and delivers explainable predictive solutions through a conversational interface.
+
+---
+
+**Built with ❤️ for the hackathon**
+
+⭐ Star this repo if you find it useful
+
