@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dataset Analysis | MLCopilot</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#d97721",
+                    "primary": "#c0c1ff",
+                    "surface-container-lowest": "#0d0d15",
+                    "error-container": "#93000a",
+                    "surface-container-highest": "#34343d",
+                    "error": "#ffb4ab",
+                    "outline-variant": "#464554",
+                    "primary-container": "#8083ff",
+                    "surface-container-high": "#292932",
+                    "on-tertiary-fixed": "#301400",
+                    "on-surface-variant": "#c7c4d7",
+                    "tertiary": "#ffb783",
+                    "on-tertiary-fixed-variant": "#703700",
+                    "primary-fixed": "#e1e0ff",
+                    "secondary-container": "#6f00be",
+                    "on-tertiary-container": "#452000",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "on-secondary": "#490080",
+                    "tertiary-fixed-dim": "#ffb783",
+                    "on-error-container": "#ffdad6",
+                    "on-error": "#690005",
+                    "on-secondary-container": "#d6a9ff",
+                    "surface-dim": "#13131b",
+                    "inverse-surface": "#e4e1ed",
+                    "inverse-primary": "#494bd6",
+                    "surface-variant": "#34343d",
+                    "surface-container": "#1f1f27",
+                    "on-tertiary": "#4f2500",
+                    "on-background": "#e4e1ed",
+                    "on-surface": "#e4e1ed",
+                    "surface-tint": "#c0c1ff",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "on-primary": "#1000a9",
+                    "secondary-fixed-dim": "#ddb7ff",
+                    "on-secondary-fixed": "#2c0051",
+                    "surface-container-low": "#1b1b23",
+                    "surface": "#13131b",
+                    "secondary-fixed": "#f0dbff",
+                    "on-primary-fixed": "#07006c",
+                    "background": "#13131b",
+                    "surface-bright": "#393841",
+                    "outline": "#908fa0",
+                    "tertiary-fixed": "#ffdcc5",
+                    "on-primary-container": "#0d0096",
+                    "secondary": "#ddb7ff",
+                    "on-secondary-fixed-variant": "#6900b3",
+                    "inverse-on-surface": "#303038"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "panel-gap": "16px",
+                    "gutter": "24px",
+                    "base": "4px",
+                    "section-padding": "64px",
+                    "margin-container": "32px"
+            },
+            "fontFamily": {
+                    "mono-code": ["Geist"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Geist"],
+                    "display-lg": ["Geist"],
+                    "display-lg-mobile": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "mono-code": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #13131b; color: #e4e1ed; }
+        .glass-panel {
+            background: rgba(31, 31, 39, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .active-glow {
+            box-shadow: 0 0 20px rgba(192, 193, 255, 0.1);
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .grid-heatmap { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
+        .heatmap-cell { aspect-ratio: 1/1; border-radius: 2px; }
+        .feature-bar { transition: height 0.3s ease; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 sticky left-0 top-0 bg-surface-container-low dark:bg-surface-container-low/90 backdrop-blur-2xl border-r border-white/5 flex flex-col py-base z-50 hidden md:flex">
+<div class="px-6 py-8">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">hub</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary-fixed">Core Engine</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">V2.4 Active</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">folder_copy</span>
+<span class="font-label-sm text-label-sm">Projects</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-label-sm text-label-sm">Agents</span>
+</a>
+<a class="bg-secondary-container/20 text-secondary border-r-4 border-secondary flex items-center gap-3 px-4 py-3 active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-sm text-label-sm">Datasets</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">science</span>
+<span class="font-label-sm text-label-sm">Experiments</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">model_training</span>
+<span class="font-label-sm text-label-sm">Models</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-sm text-label-sm">Reports</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+<span class="font-label-sm text-label-sm">Deployments</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<div class="px-4 py-6 border-t border-white/5">
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg font-label-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">add</span>
+                New Agent
+            </button>
+<div class="mt-6 flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-error transition-colors cursor-pointer">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-sm text-label-sm">Logout</span>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-w-0 bg-background overflow-y-auto">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky z-40 bg-surface-container dark:bg-surface-container/80 backdrop-blur-xl border-b border-white/5 shadow-sm flex justify-between items-center px-gutter h-16 w-full">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary">MLCopilot</span>
+<div class="hidden lg:flex items-center gap-6">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Models</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-150" href="#">Deployments</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="bg-surface-container-low border border-white/10 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:border-primary w-64" placeholder="Search datasets..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">help</button>
+<button class="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-lg font-label-sm active:scale-95 duration-150">Create Project</button>
+<img alt="User avatar" class="w-8 h-8 rounded-full border border-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCx5UWptehBW8Q_6hj2KZZHDvDkHxmrHBlUbc_E4n8IHrELKXsJ-RfvbWIxdFA-eGwD9nj-LduqiGZ93twu2rHrZyncmTZZTR7QRHXpiXaRT8FPF1OFMb6zQ4tbywFFioQpYoY14vNtYp4T3fryrVYqhdLO_3aR-dBFqbAJgpzV72-USNGPk3dfzogYEPoRqekEv-goNtBPK_oyqYA6TEbhPNgn-WEYhlwd_48cMI3sV-QBAI1_EXAtbPeOVcN1CiNQut116FXtJwJk"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-8 max-w-[1600px] mx-auto w-full space-y-panel-gap">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface mb-2">Customer_Churn_V4.csv</h2>
+<div class="flex items-center gap-4 text-on-surface-variant font-label-sm">
+<span class="flex items-center gap-1"><span class="status-dot bg-tertiary"></span> Analyzing</span>
+<span>•</span>
+<span>Updated 2 hours ago</span>
+<span>•</span>
+<span class="bg-surface-container-highest px-2 py-0.5 rounded text-[10px]">TABULAR</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="glass-panel px-4 py-2 rounded-lg text-primary flex items-center gap-2 font-label-sm hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-lg">download</span> Export
+                    </button>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg flex items-center gap-2 font-label-sm active:scale-95">
+<span class="material-symbols-outlined text-lg">play_arrow</span> Run Training
+                    </button>
+</div>
+</div>
+<!-- Summary Cards Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-panel-gap">
+<div class="glass-panel p-6 rounded-xl flex flex-col justify-between">
+<span class="text-on-surface-variant font-label-sm">Rows</span>
+<span class="text-headline-md font-headline-md text-primary mt-2">1,240,592</span>
+<div class="h-1 bg-white/5 mt-4 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-3/4"></div>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-xl flex flex-col justify-between">
+<span class="text-on-surface-variant font-label-sm">Columns</span>
+<span class="text-headline-md font-headline-md text-secondary mt-2">48</span>
+<span class="text-label-sm text-tertiary mt-4">+2 from last upload</span>
+</div>
+<div class="glass-panel p-6 rounded-xl flex flex-col justify-between">
+<span class="text-on-surface-variant font-label-sm">Missing Values</span>
+<span class="text-headline-md font-headline-md text-error mt-2">12,405</span>
+<span class="text-label-sm text-error/60 mt-4">1.0% of total data</span>
+</div>
+<div class="glass-panel p-6 rounded-xl flex flex-col justify-between">
+<span class="text-on-surface-variant font-label-sm">Duplicates</span>
+<span class="text-headline-md font-headline-md text-on-surface mt-2">0</span>
+<span class="text-label-sm text-on-surface-variant mt-4">Clean dataset</span>
+</div>
+<div class="glass-panel p-6 rounded-xl flex flex-col justify-between">
+<span class="text-on-surface-variant font-label-sm">Target Variable</span>
+<span class="text-headline-md font-headline-md text-tertiary mt-2">churn_status</span>
+<span class="text-label-sm text-tertiary-fixed-dim mt-4">Binary Classification</span>
+</div>
+</div>
+<!-- Visualization Main Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-panel-gap">
+<!-- Left Column: Primary Visuals -->
+<div class="lg:col-span-8 space-y-panel-gap">
+<!-- Correlation Matrix -->
+<div class="glass-panel p-6 rounded-xl">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-on-surface">Feature Correlation Matrix</h3>
+<button class="material-symbols-outlined text-on-surface-variant">fullscreen</button>
+</div>
+<div class="grid grid-cols-8 gap-1">
+<script>
+                                // Generate a color scale for correlation
+                                const getCorrColor = (val) => {
+                                    if(val > 0.8) return 'bg-primary-container';
+                                    if(val > 0.5) return 'bg-primary/40';
+                                    if(val > 0.2) return 'bg-primary/20';
+                                    if(val > -0.2) return 'bg-surface-container-highest';
+                                    if(val > -0.5) return 'bg-secondary/20';
+                                    return 'bg-secondary-container';
+                                };
+                                for(let i=0; i<64; i++) {
+                                    const rand = Math.random() * 2 - 1;
+                                    document.write(`<div class="heatmap-cell ${getCorrColor(rand)} relative group cursor-pointer hover:scale-110 transition-transform">
+                                        <div class="absolute invisible group-hover:visible bg-black/80 text-white text-[10px] p-1 rounded -top-8 left-1/2 -translate-x-1/2 z-10 whitespace-nowrap">${rand.toFixed(2)}</div>
+                                    </div>`);
+                                }
+                            </script>
+</div>
+<div class="flex justify-between mt-4 text-label-sm text-on-surface-variant">
+<span>Feature X1-X8</span>
+<div class="flex items-center gap-2">
+<div class="w-32 h-2 bg-gradient-to-r from-secondary-container via-surface-container-highest to-primary-container rounded"></div>
+<span>-1 to +1</span>
+</div>
+</div>
+</div>
+<!-- Feature Distribution -->
+<div class="glass-panel p-6 rounded-xl">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-on-surface">Target Distribution (churn_status)</h3>
+<select class="bg-surface-container text-xs border-none rounded py-1 pr-8">
+<option>Histograms</option>
+<option>Box Plots</option>
+</select>
+</div>
+<div class="h-64 flex items-end gap-1 px-2">
+<script>
+                                for(let i=0; i<40; i++) {
+                                    const height = Math.floor(Math.random() * 80) + 10;
+                                    const opacity = (height / 100) + 0.2;
+                                    document.write(`<div class="flex-1 bg-primary rounded-t-sm" style="height: ${height}%; opacity: ${opacity}"></div>`);
+                                }
+                            </script>
+</div>
+<div class="flex justify-between mt-4 border-t border-white/5 pt-4 text-on-surface-variant font-label-sm">
+<span>0.0</span>
+<span>0.25</span>
+<span>0.50</span>
+<span>0.75</span>
+<span>1.0</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Scores & Insights -->
+<div class="lg:col-span-4 space-y-panel-gap">
+<!-- Data Quality Score -->
+<div class="glass-panel p-6 rounded-xl flex flex-col items-center">
+<h3 class="w-full font-label-sm text-on-surface-variant mb-6 text-center">OVERALL DATA QUALITY</h3>
+<div class="relative w-48 h-48 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-white/5" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary drop-shadow-[0_0_10px_rgba(192,193,255,0.4)]" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-dasharray="502.4" stroke-dashoffset="60" stroke-width="12"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="text-4xl font-display-lg font-bold text-on-surface">88</span>
+<span class="text-label-sm text-primary uppercase tracking-widest">Excellent</span>
+</div>
+</div>
+<div class="w-full mt-8 grid grid-cols-2 gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant uppercase">Completeness</span>
+<span class="text-lg font-headline-md">99%</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant uppercase">Consistency</span>
+<span class="text-lg font-headline-md">84%</span>
+</div>
+</div>
+</div>
+<!-- AI Insights -->
+<div class="glass-panel p-6 rounded-xl flex-1 active-glow">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h3 class="font-headline-md text-on-surface">AI Smart Insights</h3>
+</div>
+<div class="space-y-6">
+<div class="relative pl-6 border-l-2 border-primary/30">
+<p class="text-body-md font-body-md text-on-surface leading-relaxed">
+<span class="text-primary font-bold">Class Imbalance Detected:</span> The target feature <code class="bg-primary/10 px-1 rounded">churn_status</code> shows an 82/18 split. Consider SMOTE upsampling before training.
+                                </p>
+</div>
+<div class="relative pl-6 border-l-2 border-secondary/30">
+<p class="text-body-md font-body-md text-on-surface leading-relaxed">
+<span class="text-secondary font-bold">Strong Correlation:</span> <code class="bg-secondary/10 px-1 rounded">monthly_charges</code> and <code class="bg-secondary/10 px-1 rounded">tenure</code> have a 0.89 correlation. One feature may be redundant.
+                                </p>
+</div>
+<div class="relative pl-6 border-l-2 border-tertiary/30">
+<p class="text-body-md font-body-md text-on-surface leading-relaxed">
+<span class="text-tertiary font-bold">Data Leakage Risk:</span> Column <code class="bg-tertiary/10 px-1 rounded">last_contact_id</code> contains high-cardinality metadata. Recommend dropping for model generalization.
+                                </p>
+</div>
+</div>
+<button class="w-full mt-8 py-3 border border-primary/20 rounded-lg text-primary font-label-sm hover:bg-primary/5 transition-colors">
+                            Generate Full Report
+                        </button>
+</div>
+<!-- Missing Value Heatmap (Strip) -->
+<div class="glass-panel p-6 rounded-xl">
+<h3 class="font-label-sm text-on-surface-variant mb-4">MISSING VALUE DENSITY</h3>
+<div class="h-12 w-full flex gap-px bg-white/5 rounded overflow-hidden">
+<script>
+                                for(let i=0; i<100; i++) {
+                                    const isMissing = Math.random() < 0.05;
+                                    document.write(`<div class="h-full flex-1 ${isMissing ? 'bg-error' : 'bg-primary/20'}"></div>`);
+                                }
+                            </script>
+</div>
+<div class="flex justify-between mt-2 text-[10px] text-on-surface-variant font-mono-code uppercase">
+<span>Index 0</span>
+<span>Index 1,240,592</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="p-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-on-surface-variant font-label-sm gap-4">
+<div class="flex items-center gap-4">
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="hover:text-primary transition-colors" href="#">API Reference</a>
+</div>
+<div class="flex items-center gap-6">
+<span class="flex items-center gap-2"><span class="status-dot bg-green-500 animate-pulse"></span> Engine Live</span>
+<span>© 2024 MLCopilot Enterprise v2.4.1</span>
+</div>
+</footer>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-transform z-50">
+<span class="material-symbols-outlined text-2xl">chat_bubble</span>
+</button>
+<script>
+        // Micro-interactions for heatmap cells
+        document.querySelectorAll('.heatmap-cell').forEach(cell => {
+            cell.addEventListener('mouseenter', () => {
+                // Subtle feedback could go here
+            });
+        });
+    </script>
+</body></html>

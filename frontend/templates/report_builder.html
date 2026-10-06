@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Report Builder | MLCopilot</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#d97721",
+                    "primary": "#c0c1ff",
+                    "surface-container-lowest": "#0d0d15",
+                    "error-container": "#93000a",
+                    "surface-container-highest": "#34343d",
+                    "error": "#ffb4ab",
+                    "outline-variant": "#464554",
+                    "primary-container": "#8083ff",
+                    "surface-container-high": "#292932",
+                    "on-tertiary-fixed": "#301400",
+                    "on-surface-variant": "#c7c4d7",
+                    "tertiary": "#ffb783",
+                    "on-tertiary-fixed-variant": "#703700",
+                    "primary-fixed": "#e1e0ff",
+                    "secondary-container": "#6f00be",
+                    "on-tertiary-container": "#452000",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "on-secondary": "#490080",
+                    "tertiary-fixed-dim": "#ffb783",
+                    "on-error-container": "#ffdad6",
+                    "on-error": "#690005",
+                    "on-secondary-container": "#d6a9ff",
+                    "surface-dim": "#13131b",
+                    "inverse-surface": "#e4e1ed",
+                    "inverse-primary": "#494bd6",
+                    "surface-variant": "#34343d",
+                    "surface-container": "#1f1f27",
+                    "on-tertiary": "#4f2500",
+                    "on-background": "#e4e1ed",
+                    "on-surface": "#e4e1ed",
+                    "surface-tint": "#c0c1ff",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "on-primary": "#1000a9",
+                    "secondary-fixed-dim": "#ddb7ff",
+                    "on-secondary-fixed": "#2c0051",
+                    "surface-container-low": "#1b1b23",
+                    "surface": "#13131b",
+                    "secondary-fixed": "#f0dbff",
+                    "on-primary-fixed": "#07006c",
+                    "background": "#13131b",
+                    "surface-bright": "#393841",
+                    "outline": "#908fa0",
+                    "tertiary-fixed": "#ffdcc5",
+                    "on-primary-container": "#0d0096",
+                    "secondary": "#ddb7ff",
+                    "on-secondary-fixed-variant": "#6900b3",
+                    "inverse-on-surface": "#303038"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "panel-gap": "16px",
+                    "gutter": "24px",
+                    "base": "4px",
+                    "section-padding": "64px",
+                    "margin-container": "32px"
+            },
+            "fontFamily": {
+                    "mono-code": ["Geist"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Geist"],
+                    "display-lg": ["Geist"],
+                    "display-lg-mobile": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "mono-code": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(31, 31, 39, 0.7);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .paper-preview {
+            aspect-ratio: 1 / 1.414;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+        .paper-preview:hover {
+            transform: translateY(-4px);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #34343d;
+            border-radius: 10px;
+        }
+        .active-glow {
+            box-shadow: 0 0 20px rgba(192, 193, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container/30">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 sticky left-0 top-0 bg-surface-container-low dark:bg-surface-container-low/90 backdrop-blur-2xl border-r border-white/5 flex flex-col py-4 z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container">rocket_launch</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary-fixed leading-tight">Core Engine</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">V2.4 Active</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 overflow-y-auto px-2">
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="folder_copy">folder_copy</span>
+<span class="font-label-sm text-label-sm">Projects</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span class="font-label-sm text-label-sm">Agents</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-label-sm text-label-sm">Datasets</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="science">science</span>
+<span class="font-label-sm text-label-sm">Experiments</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="model_training">model_training</span>
+<span class="font-label-sm text-label-sm">Models</span>
+</a>
+<!-- Active Tab -->
+<a class="bg-secondary-container/20 text-secondary border-r-4 border-secondary flex items-center gap-3 px-4 py-3 active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-sm text-label-sm">Reports</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+<span class="font-label-sm text-label-sm">Deployments</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-white/5">
+<button class="w-full bg-primary-container text-on-primary-container font-label-sm text-label-sm py-3 rounded-lg flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                    New Agent
+                </button>
+<div class="mt-4">
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-2 hover:text-error transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-sm text-label-sm">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col relative min-w-0 bg-background overflow-hidden">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky bg-surface-container dark:bg-surface-container/80 backdrop-blur-xl flex justify-between items-center px-gutter h-16 w-full border-b border-white/5 shadow-sm z-40">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary">MLCopilot</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors" href="#">Models</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors" href="#">Deployments</a>
+</nav>
+</div>
+<div class="flex items-center gap-4 flex-1 max-w-xl mx-8">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-full py-2 pl-10 pr-4 text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Search reports, agents, or logs..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="help">help</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
+<img alt="User avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE4KvZZl1nbBaXIX7S71P9CAtYqw3qzhUb2Pp-WqjCXbZoJlx72eKgZ3GyaQeh7-eVagrePa9xEhtA5db9JFw29wM34GvExfY00G1BuXPGOr7ploWu_R_Tf_YCsm79lR4xXAUew2lQ56grjaXow_TfbNO7ZJkFvBEUqPUFELolpMThlBYwkEFzXiBpBeRfOyNTmBUG1ESpuqwKm8inUEk8hLRMEjlGPRMr1-QgML57q16fdIKJf7NHvnScCTp2BJA8j-icIgnNMyIx"/>
+</div>
+<button class="bg-primary text-on-primary font-body-md px-6 py-2 rounded-full font-bold hover:brightness-110 active:scale-95 duration-150">
+                        Create Project
+                    </button>
+</div>
+</header>
+<!-- Report Builder Core -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Left Control Panel: Section Toggles -->
+<aside class="w-80 glass-panel border-r border-white/5 p-gutter overflow-y-auto hidden lg:block">
+<h2 class="font-headline-md text-headline-md mb-6 text-primary">Report Builder</h2>
+<div class="space-y-6">
+<section>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-4">Structure</h3>
+<div class="space-y-3">
+<label class="flex items-center justify-between p-3 rounded-lg bg-surface-container-high/50 border border-white/5 hover:border-primary/50 cursor-pointer transition-all">
+<span class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+<span class="text-body-md">Executive Summary</span>
+</span>
+<input checked="" class="rounded bg-surface-container border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-3 rounded-lg bg-surface-container-high/50 border border-white/5 hover:border-primary/50 cursor-pointer transition-all">
+<span class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="table_chart">table_chart</span>
+<span class="text-body-md">Result Tables</span>
+</span>
+<input checked="" class="rounded bg-surface-container border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-3 rounded-lg bg-surface-container-high/50 border border-white/5 hover:border-primary/50 cursor-pointer transition-all">
+<span class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="monitoring">monitoring</span>
+<span class="text-body-md">Analytics Charts</span>
+</span>
+<input checked="" class="rounded bg-surface-container border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-3 rounded-lg bg-surface-container-high/50 border border-white/5 hover:border-primary/50 cursor-pointer transition-all">
+<span class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="code">code</span>
+<span class="text-body-md">Model Metadata</span>
+</span>
+<input class="rounded bg-surface-container border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+</label>
+</div>
+</section>
+<section>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-4">Branding</h3>
+<div class="space-y-4">
+<div>
+<p class="text-label-sm mb-2">Accent Color</p>
+<div class="flex gap-2">
+<button class="w-6 h-6 rounded-full bg-primary ring-2 ring-offset-2 ring-offset-background ring-primary"></button>
+<button class="w-6 h-6 rounded-full bg-secondary"></button>
+<button class="w-6 h-6 rounded-full bg-tertiary"></button>
+<button class="w-6 h-6 rounded-full bg-emerald-400"></button>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-white/5">
+<p class="text-label-sm mb-2">Company Logo</p>
+<div class="border-2 border-dashed border-outline-variant rounded-lg p-4 text-center hover:border-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="upload_file">upload_file</span>
+<p class="text-[10px] text-on-surface-variant mt-1">PNG, SVG (max 2MB)</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</aside>
+<!-- Central Canvas: Preview Area -->
+<section class="flex-1 bg-surface-dim relative overflow-y-auto p-12 flex flex-col items-center">
+<div class="max-w-4xl w-full flex flex-col gap-12 pb-24">
+<!-- Toolbar for Preview -->
+<div class="flex justify-between items-center w-full bg-surface-container/50 backdrop-blur px-6 py-3 rounded-2xl border border-white/5 active-glow">
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">zoom_in</span>
+</button>
+<span class="text-label-sm text-on-surface-variant">100%</span>
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">zoom_out</span>
+</button>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-lg border border-white/5">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-white">chevron_left</button>
+<span class="text-label-sm font-mono-code px-2 border-x border-white/5">PAGE 1 / 4</span>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-white">chevron_right</button>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-primary-container/20 rounded-lg text-primary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+</div>
+</div>
+<!-- Page 1: Title & Executive Summary -->
+<div class="paper-preview w-full bg-white text-slate-900 p-16 relative overflow-hidden group">
+<!-- Subtle grid background for the "paper" feel -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]"></div>
+<header class="border-b-4 border-primary pb-8 mb-12">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-mono-code text-[12px] uppercase tracking-tighter text-slate-400 mb-2">Internal Research Report</p>
+<h1 class="font-display-lg text-[40px] font-bold leading-none text-slate-900">Neural Engine V2.4 Performance Audit</h1>
+</div>
+<div class="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-300">LOGO</div>
+</div>
+</header>
+<div class="grid grid-cols-2 gap-8 mb-12">
+<div>
+<h4 class="font-label-sm text-[10px] uppercase font-bold text-primary mb-2">Prepared By</h4>
+<p class="text-body-md font-semibold">MLCopilot Automated Agent</p>
+<p class="text-body-md text-slate-500">Infrastructure Intelligence Team</p>
+</div>
+<div>
+<h4 class="font-label-sm text-[10px] uppercase font-bold text-primary mb-2">Timestamp</h4>
+<p class="text-body-md font-semibold">Oct 24, 2023 — 14:32:01 UTC</p>
+<p class="text-body-md text-slate-500">Reference: #AUDIT-8812-B</p>
+</div>
+</div>
+<section class="mb-12">
+<h2 class="text-headline-md font-bold text-slate-800 mb-4 border-l-4 border-slate-200 pl-4">Executive Summary</h2>
+<p class="text-body-md text-slate-600 leading-relaxed">
+                                    The following report provides a detailed breakdown of the recent inference scaling experiments performed on the Neural Engine cluster. Initial findings indicate a 14% improvement in token throughput while maintaining consistent latency thresholds below 45ms. Security compliance checks passed all mandatory heuristic layers.
+                                </p>
+</section>
+<div class="grid grid-cols-3 gap-4">
+<div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+<p class="text-[10px] uppercase text-slate-400 font-bold mb-1">Total Agents</p>
+<p class="text-headline-md font-bold text-slate-900">128</p>
+</div>
+<div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+<p class="text-[10px] uppercase text-slate-400 font-bold mb-1">Efficiency</p>
+<p class="text-headline-md font-bold text-emerald-600">+12.4%</p>
+</div>
+<div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+<p class="text-[10px] uppercase text-slate-400 font-bold mb-1">Error Rate</p>
+<p class="text-headline-md font-bold text-slate-900">0.02%</p>
+</div>
+</div>
+</div>
+<!-- Page 2: Visualization -->
+<div class="paper-preview w-full bg-white text-slate-900 p-16 relative overflow-hidden">
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]"></div>
+<h2 class="text-headline-md font-bold text-slate-800 mb-8">Performance Analytics</h2>
+<div class="w-full aspect-[16/9] bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center relative group">
+<img class="w-full h-full object-cover rounded-2xl opacity-80" data-alt="A clean, professional data visualization dashboard displayed on a white paper background. The chart features minimalist line graphs and bar charts in shades of navy blue and emerald green, illustrating upward growth trends. The lighting is bright and studio-like, emphasizing a crisp, high-end business report aesthetic with significant white space and elegant typography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGPxBy2JtacfP83UApRCSbMM8sM45abETL9Q7vjUfKJZvazTFEgiNjnxIumY8-7LwFkCL0LvrmKPQ7GP45jcxnKlHuhGoEE_rGIM3tQfWOAYpyeNYq2As28rrby7rZLPH23fpPAUqqq-pvSD_thwHfuH-BL9YZhZJvbTqiGDVdspUNW9BGlslu6ayGo2ckMezjsqmpgksLibXnzlu4O-kUrFmOmjKWvuQ08gW-T9CxwvAQFiF7cOCLYWXgxNmS0DEtqM7KQXYo2_m9"/>
+<div class="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent flex items-end p-6">
+<p class="text-[12px] font-mono-code text-slate-500 italic">Fig 1.1: Multi-Agent Latency Distribution across 24h cycle</p>
+</div>
+</div>
+<div class="mt-8 space-y-4">
+<div class="p-4 border border-slate-100 rounded-xl flex items-center gap-6">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<p class="flex-1 text-body-md">Optimized Tokenization Layer</p>
+<p class="font-mono-code font-bold">ACTIVE</p>
+</div>
+<div class="p-4 border border-slate-100 rounded-xl flex items-center gap-6">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<p class="flex-1 text-body-md">Cold Storage Retrieval</p>
+<p class="font-mono-code font-bold">340ms</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Floating FAB (Contextual) -->
+<button class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container shadow-2xl px-8 py-4 rounded-full font-bold flex items-center gap-3 hover:scale-105 transition-transform">
+<span class="material-symbols-outlined">auto_fix</span>
+                        Regenerate Analytics
+                    </button>
+</section>
+<!-- Right Sidebar: Export Options -->
+<aside class="w-72 glass-panel border-l border-white/5 p-6 flex flex-col gap-8">
+<section>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-4">Export Format</h3>
+<div class="grid grid-cols-1 gap-3">
+<button class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-high border-2 border-primary active-glow transition-all">
+<div class="w-10 h-10 rounded-lg bg-error-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-error" data-icon="picture_as_pdf">picture_as_pdf</span>
+</div>
+<div class="text-left">
+<p class="font-bold">PDF Document</p>
+<p class="text-[10px] text-on-surface-variant">Print optimized</p>
+</div>
+</button>
+<button class="flex items-center gap-4 p-4 rounded-xl bg-surface-container hover:bg-surface-container-high border-2 border-transparent hover:border-white/10 transition-all">
+<div class="w-10 h-10 rounded-lg bg-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+</div>
+<div class="text-left">
+<p class="font-bold">DOCX Report</p>
+<p class="text-[10px] text-on-surface-variant">Editable text</p>
+</div>
+</button>
+<button class="flex items-center gap-4 p-4 rounded-xl bg-surface-container hover:bg-surface-container-high border-2 border-transparent hover:border-white/10 transition-all">
+<div class="w-10 h-10 rounded-lg bg-tertiary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="html">html</span>
+</div>
+<div class="text-left">
+<p class="font-bold">HTML Web</p>
+<p class="text-[10px] text-on-surface-variant">Interactive assets</p>
+</div>
+</button>
+</div>
+</section>
+<section class="flex-1">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-4">Delivery</h3>
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-[11px] text-on-surface-variant">Recipient Emails</label>
+<div class="flex flex-wrap gap-2 p-2 bg-surface-container-lowest rounded-lg border border-outline-variant">
+<span class="bg-primary/20 text-primary text-[10px] px-2 py-1 rounded-full flex items-center gap-1">
+                                        stakeholders@corp.com
+                                        <span class="material-symbols-outlined text-[12px] cursor-pointer">close</span>
+</span>
+<input class="bg-transparent border-none p-0 text-[12px] focus:ring-0 w-24" placeholder="Add..." type="text"/>
+</div>
+</div>
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="rounded bg-surface-container border-outline-variant text-primary" type="checkbox"/>
+<span class="text-label-sm text-on-surface-variant">Schedule monthly recurring</span>
+</label>
+</div>
+</section>
+<div class="mt-auto space-y-3">
+<button class="w-full bg-primary text-on-primary font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary/10">
+<span class="material-symbols-outlined">download</span>
+                            Download Report
+                        </button>
+<button class="w-full bg-surface-container-high text-on-surface font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-surface-container-highest active:scale-95 transition-all border border-white/5">
+<span class="material-symbols-outlined">share</span>
+                            Share Link
+                        </button>
+</div>
+</aside>
+</div>
+</main>
+</div>
+<script>
+        // Micro-interactions for report builder
+        document.querySelectorAll('.paper-preview').forEach(card => {
+            card.addEventListener('click', () => {
+                // Potential fullscreen preview logic
+                console.log('Previewing page...');
+            });
+        });
+
+        // Toggle handling
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                // Simulating live UI updates
+                const sectionName = e.target.closest('label').querySelector('.text-body-md').innerText;
+                console.log(`Toggling ${sectionName}: ${e.target.checked}`);
+            });
+        });
+    </script>
+</body></html>

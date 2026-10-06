@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MLCopilot | Executive Insights Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #13131b;
+            color: #e4e1ed;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(31, 31, 39, 0.7);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-primary:hover {
+            box-shadow: 0 0 20px rgba(192, 193, 255, 0.15);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom Sparkline Animation */
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+        .sparkline-path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: draw 2s ease-out forwards;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#d97721",
+                        "primary": "#c0c1ff",
+                        "surface-container-lowest": "#0d0d15",
+                        "error-container": "#93000a",
+                        "surface-container-highest": "#34343d",
+                        "error": "#ffb4ab",
+                        "outline-variant": "#464554",
+                        "primary-container": "#8083ff",
+                        "surface-container-high": "#292932",
+                        "on-tertiary-fixed": "#301400",
+                        "on-surface-variant": "#c7c4d7",
+                        "tertiary": "#ffb783",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "primary-fixed": "#e1e0ff",
+                        "secondary-container": "#6f00be",
+                        "on-tertiary-container": "#452000",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-secondary": "#490080",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-secondary-container": "#d6a9ff",
+                        "surface-dim": "#13131b",
+                        "inverse-surface": "#e4e1ed",
+                        "inverse-primary": "#494bd6",
+                        "surface-variant": "#34343d",
+                        "surface-container": "#1f1f27",
+                        "on-tertiary": "#4f2500",
+                        "on-background": "#e4e1ed",
+                        "on-surface": "#e4e1ed",
+                        "surface-tint": "#c0c1ff",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-primary": "#1000a9",
+                        "secondary-fixed-dim": "#ddb7ff",
+                        "on-secondary-fixed": "#2c0051",
+                        "surface-container-low": "#1b1b23",
+                        "surface": "#13131b",
+                        "secondary-fixed": "#f0dbff",
+                        "on-primary-fixed": "#07006c",
+                        "background": "#13131b",
+                        "surface-bright": "#393841",
+                        "outline": "#908fa0",
+                        "tertiary-fixed": "#ffdcc5",
+                        "on-primary-container": "#0d0096",
+                        "secondary": "#ddb7ff",
+                        "on-secondary-fixed-variant": "#6900b3",
+                        "inverse-on-surface": "#303038"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "panel-gap": "16px",
+                        "gutter": "24px",
+                        "base": "4px",
+                        "section-padding": "64px",
+                        "margin-container": "32px"
+                    },
+                    "fontFamily": {
+                        "mono-code": ["Geist"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "display-lg-mobile": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "mono-code": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-body-md text-body-md bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 sticky left-0 top-0 bg-surface-container-low dark:bg-surface-container-low/90 backdrop-blur-2xl border-r border-white/5 flex flex-col py-base z-50">
+<div class="px-6 py-8">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">dataset</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary-fixed leading-tight">Core Engine</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">V2.4 Active</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">folder_copy</span>
+<span class="font-label-sm text-label-sm">Projects</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-label-sm text-label-sm">Agents</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-sm text-label-sm">Datasets</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">science</span>
+<span class="font-label-sm text-label-sm">Experiments</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">model_training</span>
+<span class="font-label-sm text-label-sm">Models</span>
+</a>
+<a class="bg-secondary-container/20 text-secondary border-r-4 border-secondary flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-sm text-label-sm">Reports</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+<span class="font-label-sm text-label-sm">Deployments</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4 pb-8 space-y-4">
+<button class="w-full py-3 bg-primary text-on-primary font-bold rounded-lg flex items-center justify-center gap-2 glow-primary transition-all active:scale-95">
+<span class="material-symbols-outlined">add</span>
+<span class="font-label-sm text-label-sm">New Agent</span>
+</button>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-sm text-label-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky z-40 bg-surface-container dark:bg-surface-container/80 backdrop-blur-xl border-b border-white/5 shadow-sm h-16 flex justify-between items-center px-gutter">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary">MLCopilot</span>
+<div class="hidden md:flex gap-6">
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors active:scale-95 duration-150" href="#">Models</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors active:scale-95 duration-150" href="#">Deployments</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container-lowest border border-white/10 rounded-full pl-10 pr-4 py-1.5 text-sm focus:border-primary focus:ring-0 w-64 transition-all" placeholder="Search insights..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-variant border border-white/10 overflow-hidden ml-2">
+<img alt="User avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnqnXzBvB4JThNuLi9iWT0dJanNdoiFM_yhLn4zwsE3JuoCBA6apkdrMFhoNPfs9GUUk6ZvmYIdB1Km-kvLY48TtM1mA8n2P3cVEnFb8n4w69hNtxja-swLr8VaQ60c1beU0OTqjdQx3Z-tBBKPTydgi0LXMnGZHOqkxKia8It8KiWgqe10x2mlcsAqJMtG0FOp5xvaSoEzP3b5XEH3D_x7xNMA0SiyXvdXtnWIMRgSqWbNpawxFpCjyM3VtnTO7-2Ss3vnr1AKu-6"/>
+</div>
+</div>
+<button class="ml-2 bg-primary text-on-primary px-4 py-2 rounded-lg font-bold text-sm glow-primary active:scale-95 duration-150">Create Project</button>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 p-gutter overflow-y-auto space-y-panel-gap">
+<!-- Header Section with Animation Overlay -->
+<section class="relative h-48 rounded-xl overflow-hidden glass-panel p-8 flex flex-col justify-end">
+
+<div class="relative z-10">
+<h2 class="font-display-lg text-display-lg text-primary-fixed mb-2">Executive Insights</h2>
+<p class="font-body-lg text-on-surface-variant max-w-2xl">Autonomous cross-analysis of active deployments, project metrics, and market volatility signals.</p>
+</div>
+</section>
+<!-- Bento Grid - Findings & Trends -->
+<div class="grid grid-cols-12 gap-panel-gap">
+<!-- AI Findings Column -->
+<div class="col-span-12 lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-panel-gap">
+<!-- Key Finding 1 -->
+<div class="glass-panel p-6 rounded-xl hover:bg-surface-container-high transition-colors group">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-secondary-container/30 text-secondary px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">High Impact</span>
+<div class="flex items-center gap-1 text-primary">
+<span class="font-bold">98%</span>
+<span class="text-[10px] uppercase font-mono-code">Confidence</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md mb-3 text-on-surface leading-tight">Agent Latency Anomaly detected in Region-US-East</h3>
+<p class="text-on-surface-variant font-body-md mb-6">Cross-comparison suggests a 12% drop in token efficiency correlated with the latest model update deployment.</p>
+<div class="flex items-center gap-4 mt-auto">
+<div class="flex-1 bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[98%]"></div>
+</div>
+<span class="material-symbols-outlined text-secondary text-sm">trending_up</span>
+</div>
+</div>
+<!-- Key Finding 2 -->
+<div class="glass-panel p-6 rounded-xl hover:bg-surface-container-high transition-colors group">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-tertiary-container/30 text-tertiary px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">Efficiency Win</span>
+<div class="flex items-center gap-1 text-primary">
+<span class="font-bold">84%</span>
+<span class="text-[10px] uppercase font-mono-code">Confidence</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md mb-3 text-on-surface leading-tight">Cost Optimization: Dataset Distillation Strategy</h3>
+<p class="text-on-surface-variant font-body-md mb-6">Implementing recursive pruning on 'Alpha-Flow' datasets could reduce compute overhead by $4.2k monthly.</p>
+<div class="flex items-center gap-4 mt-auto">
+<div class="flex-1 bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[84%]"></div>
+</div>
+<span class="material-symbols-outlined text-tertiary text-sm">savings</span>
+</div>
+</div>
+<!-- Trend Analysis Span -->
+<div class="md:col-span-2 glass-panel p-8 rounded-xl">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline-md text-headline-md">Trend Analysis Matrix</h3>
+<div class="flex gap-2">
+<button class="px-4 py-1 rounded-full bg-surface-container-highest text-xs font-bold text-on-surface border border-white/5">Daily</button>
+<button class="px-4 py-1 rounded-full text-xs font-bold text-on-surface-variant hover:text-on-surface transition-colors">Weekly</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Trend 1 -->
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-on-surface-variant">Global Throughput</span>
+<span class="text-primary font-bold">+14.2%</span>
+</div>
+<svg class="w-full h-12 overflow-visible" viewbox="0 0 100 30">
+<path class="text-primary sparkline-path" d="M0,25 Q15,5 30,20 T60,10 T90,28 T100,5" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+<p class="text-xs text-on-surface-variant/60 font-mono-code">2.4M Tokens / min avg.</p>
+</div>
+<!-- Trend 2 -->
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-on-surface-variant">Error Convergence</span>
+<span class="text-error font-bold">-2.1%</span>
+</div>
+<svg class="w-full h-12 overflow-visible" viewbox="0 0 100 30">
+<path class="text-error sparkline-path" d="M0,5 Q20,25 40,15 T70,25 T100,20" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+<p class="text-xs text-on-surface-variant/60 font-mono-code">Validation Loss: 0.042</p>
+</div>
+<!-- Trend 3 -->
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-on-surface-variant">Compute Velocity</span>
+<span class="text-tertiary font-bold">+8.7%</span>
+</div>
+<svg class="w-full h-12 overflow-visible" viewbox="0 0 100 30">
+<path class="text-tertiary sparkline-path" d="M0,20 Q10,10 20,25 T40,5 T60,20 T80,10 T100,15" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+<p class="text-xs text-on-surface-variant/60 font-mono-code">Cluster Uptime: 99.98%</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Strategic Column -->
+<div class="col-span-12 lg:col-span-4 space-y-panel-gap">
+<!-- Risks & Opportunities -->
+<div class="glass-panel p-6 rounded-xl">
+<h3 class="font-headline-md text-headline-md mb-6">Strategic Indicators</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-highest/30 border border-white/5">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="font-label-sm">Token Saturation</span>
+</div>
+<span class="bg-error-container text-on-error-container text-[10px] px-2 py-0.5 rounded font-bold uppercase">Critical Risk</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-highest/30 border border-white/5">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm">Market Drift</span>
+</div>
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-2 py-0.5 rounded font-bold uppercase">Monitor</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-highest/30 border border-white/5">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-sm">Competitive GAP</span>
+</div>
+<span class="bg-primary-container text-on-primary-container text-[10px] px-2 py-0.5 rounded font-bold uppercase">Opportunity</span>
+</div>
+</div>
+</div>
+<!-- Recommendations -->
+<div class="glass-panel rounded-xl overflow-hidden flex flex-col h-full">
+<div class="p-6 border-b border-white/5">
+<h3 class="font-headline-md text-headline-md">Strategic Roadmap</h3>
+<p class="text-xs text-on-surface-variant mt-1">Generated by Agent Insight-v4</p>
+</div>
+<div class="flex-1 p-6 space-y-6">
+<div class="flex gap-4">
+<div class="mt-1 w-8 h-8 shrink-0 rounded-lg bg-surface-container-high flex items-center justify-center border border-white/10 font-mono-code text-primary">01</div>
+<div>
+<p class="font-bold text-sm mb-1">Scale Cluster-7 Dynamic Sharding</p>
+<p class="text-xs text-on-surface-variant">Allocate 20% more GPU resources to regional clusters to mitigate latency spikes observed in morning peaks.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="mt-1 w-8 h-8 shrink-0 rounded-lg bg-surface-container-high flex items-center justify-center border border-white/10 font-mono-code text-primary">02</div>
+<div>
+<p class="font-bold text-sm mb-1">Initiate Model Distillation</p>
+<p class="text-xs text-on-surface-variant">Compress the 'Titan-XL' weights to a quantized 4-bit format for edge-node deployment to save $2k bandwidth costs.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="mt-1 w-8 h-8 shrink-0 rounded-lg bg-surface-container-high flex items-center justify-center border border-white/10 font-mono-code text-primary">03</div>
+<div>
+<p class="font-bold text-sm mb-1">Deprecate v2.1 API Endpoint</p>
+<p class="text-xs text-on-surface-variant">Migration complete for 94% of users. Shutdown legacy node to free up maintenance overhead.</p>
+</div>
+</div>
+</div>
+<button class="w-full p-4 bg-surface-container-highest text-on-surface font-bold text-sm hover:bg-surface-bright transition-colors border-t border-white/5 flex items-center justify-center gap-2">
+<span>Download Executive Summary</span>
+<span class="material-symbols-outlined text-sm">download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Visualization Section -->
+<section class="glass-panel rounded-xl p-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h3 class="font-headline-md text-headline-md">Cross-Project Correlation Map</h3>
+<p class="font-label-sm text-on-surface-variant">Mapping agent inter-dependencies vs resource consumption</p>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-1.5 rounded-lg border border-white/5">
+<button class="px-4 py-2 text-xs font-bold rounded-md bg-primary text-on-primary">Network View</button>
+<button class="px-4 py-2 text-xs font-bold rounded-md text-on-surface-variant hover:text-on-surface transition-colors">Grid Analysis</button>
+</div>
+</div>
+<div class="h-96 relative w-full flex items-center justify-center border border-white/5 rounded-xl bg-surface-container-lowest/50 overflow-hidden">
+<!-- Abstract Visualization Placeholder -->
+
+<!-- Overlay Tooltips to simulate interactivity -->
+<div class="absolute top-1/4 left-1/3 glass-panel p-3 rounded shadow-lg border border-primary/30 z-10 animate-bounce">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[10px] font-bold uppercase font-mono-code">Core_Engine_A</span>
+</div>
+<p class="text-[10px] text-on-surface-variant">Critical pathway dependency</p>
+</div>
+<div class="absolute bottom-1/3 right-1/4 glass-panel p-3 rounded shadow-lg border border-secondary/30 z-10">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-[10px] font-bold uppercase font-mono-code">Deploy_Node_Z</span>
+</div>
+<p class="text-[10px] text-on-surface-variant">Congestion detected</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+<script>
+        // Simple micro-interaction for findings cards
+        document.querySelectorAll('.glass-panel').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'transform 0.2s ease-out';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

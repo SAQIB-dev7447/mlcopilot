@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Feature Engineering | MLCopilot</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(31, 31, 39, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-primary {
+            box-shadow: 0 0 20px rgba(192, 193, 255, 0.15);
+        }
+        .pipeline-line {
+            background: linear-gradient(90deg, #c0c1ff 0%, #6f00be 100%);
+            height: 2px;
+            position: absolute;
+            z-index: 0;
+        }
+        .node-active {
+            border-bottom: 2px solid #c0c1ff;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #13131b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #34343d;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#d97721",
+                      "primary": "#c0c1ff",
+                      "surface-container-lowest": "#0d0d15",
+                      "error-container": "#93000a",
+                      "surface-container-highest": "#34343d",
+                      "error": "#ffb4ab",
+                      "outline-variant": "#464554",
+                      "primary-container": "#8083ff",
+                      "surface-container-high": "#292932",
+                      "on-tertiary-fixed": "#301400",
+                      "on-surface-variant": "#c7c4d7",
+                      "tertiary": "#ffb783",
+                      "on-tertiary-fixed-variant": "#703700",
+                      "primary-fixed": "#e1e0ff",
+                      "secondary-container": "#6f00be",
+                      "on-tertiary-container": "#452000",
+                      "primary-fixed-dim": "#c0c1ff",
+                      "on-secondary": "#490080",
+                      "tertiary-fixed-dim": "#ffb783",
+                      "on-error-container": "#ffdad6",
+                      "on-error": "#690005",
+                      "on-secondary-container": "#d6a9ff",
+                      "surface-dim": "#13131b",
+                      "inverse-surface": "#e4e1ed",
+                      "inverse-primary": "#494bd6",
+                      "surface-variant": "#34343d",
+                      "surface-container": "#1f1f27",
+                      "on-tertiary": "#4f2500",
+                      "on-background": "#e4e1ed",
+                      "on-surface": "#e4e1ed",
+                      "surface-tint": "#c0c1ff",
+                      "on-primary-fixed-variant": "#2f2ebe",
+                      "on-primary": "#1000a9",
+                      "secondary-fixed-dim": "#ddb7ff",
+                      "on-secondary-fixed": "#2c0051",
+                      "surface-container-low": "#1b1b23",
+                      "surface": "#13131b",
+                      "secondary-fixed": "#f0dbff",
+                      "on-primary-fixed": "#07006c",
+                      "background": "#13131b",
+                      "surface-bright": "#393841",
+                      "outline": "#908fa0",
+                      "tertiary-fixed": "#ffdcc5",
+                      "on-primary-container": "#0d0096",
+                      "secondary": "#ddb7ff",
+                      "on-secondary-fixed-variant": "#6900b3",
+                      "inverse-on-surface": "#303038"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "panel-gap": "16px",
+                      "gutter": "24px",
+                      "base": "4px",
+                      "section-padding": "64px",
+                      "margin-container": "32px"
+              },
+              "fontFamily": {
+                      "mono-code": ["Geist"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Geist"],
+                      "display-lg": ["Geist"],
+                      "display-lg-mobile": ["Geist"],
+                      "label-sm": ["Geist"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "mono-code": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary/30">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 sticky left-0 top-0 bg-surface-container-low dark:bg-surface-container-low/90 backdrop-blur-2xl border-r border-white/5 flex flex-col py-base z-50">
+<div class="px-6 py-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">hub</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary-fixed leading-tight">Core Engine</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">V2.4 Active</p>
+</div>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="bg-secondary-container/20 text-secondary border-r-4 border-secondary flex items-center gap-3 px-4 py-3 active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">folder_copy</span>
+<span class="font-label-sm text-label-sm">Projects</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-label-sm text-label-sm">Agents</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-sm text-label-sm">Datasets</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">science</span>
+<span class="font-label-sm text-label-sm">Experiments</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">model_training</span>
+<span class="font-label-sm text-label-sm">Models</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-sm text-label-sm">Reports</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+<span class="font-label-sm text-label-sm">Deployments</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high hover:text-on-surface transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<div class="px-4 py-6 border-t border-white/5 mt-auto">
+<button class="w-full bg-primary-container text-on-primary-container py-3 rounded-lg font-label-sm text-label-sm flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Agent
+                </button>
+<button class="w-full text-on-surface-variant mt-4 flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-sm text-label-sm">Logout</span>
+</button>
+</div>
+</aside>
+<div class="flex-1 flex flex-col relative overflow-hidden">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky bg-surface-container dark:bg-surface-container/80 backdrop-blur-xl flex justify-between items-center px-gutter h-16 w-full border-b border-white/5 shadow-sm z-40">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary">MLCopilot</span>
+<div class="hidden md:flex gap-6">
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors" href="#">Models</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md transition-colors" href="#">Deployments</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-body-md">search</span>
+<input class="bg-surface-container-low border border-outline-variant rounded-full pl-10 pr-4 py-1.5 text-body-md focus:ring-1 focus:ring-primary focus:outline-none w-64 transition-all focus:w-80" placeholder="Search parameters..." type="text"/>
+</div>
+<button class="material-symbols-outlined p-2 text-on-surface-variant hover:text-primary transition-all">notifications</button>
+<button class="material-symbols-outlined p-2 text-on-surface-variant hover:text-primary transition-all">help</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-sm text-label-sm font-bold active:scale-95 duration-150">Create Project</button>
+<img alt="User avatar" class="w-8 h-8 rounded-full border border-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5eINbxhybW0pMAv879bYoplMEiuOzaTmSkKS34EwZl4LfvQy03c-0bJn3NNnT3yFjglNRJvaJv4KxEX9TKnwxFQyJ3g16fWiJP6TdXlP797kbAXGFsVCtlvHlEzw2f972-YpxCKMQnJL1bEMjUonfUWoJHtQe9hKL_HklKf5HiZ-SvCUv47CPZSyAukF7_cgVxoTL_Cvy4UGg5_Rk3vBDMJDhHwvnmi0VYFCjzMhwbpkF9iI5lb9GKIpGuQmzLFzeOlkqSt7cnpsC"/>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 p-panel-gap flex flex-col gap-panel-gap overflow-y-auto">
+<!-- Page Header & Stats Row -->
+<div class="flex flex-col lg:flex-row gap-panel-gap items-stretch">
+<div class="flex-1 glass-panel p-6 rounded-xl flex flex-col justify-center">
+<nav class="flex gap-2 text-on-surface-variant text-label-sm mb-2">
+<span>Projects</span>
+<span>/</span>
+<span>DeepLearning_CRM</span>
+<span>/</span>
+<span class="text-primary">Feature Engineering</span>
+</nav>
+<h2 class="font-display-lg-mobile text-display-lg-mobile lg:font-display-lg lg:text-display-lg text-on-surface">Interactive Workspace</h2>
+<p class="text-on-surface-variant mt-2 max-w-2xl">Refine your raw data into predictive signals. Use the node graph to chain transformations and let MLCopilot agents suggest optimal scaling strategies.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:w-1/3">
+<div class="glass-panel p-4 rounded-xl flex flex-col justify-center">
+<span class="text-label-sm text-on-surface-variant">Features</span>
+<span class="text-headline-md font-bold text-primary">142</span>
+</div>
+<div class="glass-panel p-4 rounded-xl flex flex-col justify-center">
+<span class="text-label-sm text-on-surface-variant">Pipeline Depth</span>
+<span class="text-headline-md font-bold text-secondary">8 Nodes</span>
+</div>
+<div class="glass-panel p-4 rounded-xl flex flex-col justify-center">
+<span class="text-label-sm text-on-surface-variant">Auto-Engineered</span>
+<span class="text-headline-md font-bold text-tertiary">24</span>
+</div>
+<div class="glass-panel p-4 rounded-xl flex flex-col justify-center">
+<span class="text-label-sm text-on-surface-variant">Signal-to-Noise</span>
+<span class="text-headline-md font-bold text-primary">0.82</span>
+</div>
+</div>
+</div>
+<!-- Central Workspace (Node Builder & Agent Tips) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-panel-gap flex-1 min-h-[600px]">
+<!-- Visual Pipeline Builder (8/12) -->
+<div class="lg:col-span-8 glass-panel rounded-xl flex flex-col relative overflow-hidden group">
+<div class="p-4 border-b border-white/5 flex justify-between items-center bg-surface-container-high/30">
+<h3 class="font-headline-md text-[18px] text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">account_tree</span>
+                                Pipeline Visualizer
+                            </h3>
+<div class="flex gap-2">
+<button class="p-2 glass-panel rounded-lg hover:bg-primary/10 transition-colors"><span class="material-symbols-outlined text-[20px]">zoom_in</span></button>
+<button class="p-2 glass-panel rounded-lg hover:bg-primary/10 transition-colors"><span class="material-symbols-outlined text-[20px]">play_arrow</span></button>
+</div>
+</div>
+<!-- Flow Canvas -->
+<div class="flex-1 relative p-gutter overflow-hidden flex items-center justify-center bg-[radial-gradient(#1f1f27_1px,transparent_1px)] [background-size:24px_24px]">
+
+<!-- Static Nodes for Visual Mapping -->
+<div class="relative z-10 flex items-center gap-24">
+<!-- Node 1: Input -->
+<div class="w-48 p-4 glass-panel rounded-xl glow-primary border-primary/30 relative">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary">database</span>
+<span class="text-label-sm font-bold uppercase tracking-wider">Source Data</span>
+</div>
+<p class="text-[12px] text-on-surface-variant font-mono-code">CRM_Exports_v4.csv</p>
+<div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+<div class="w-2 h-2 bg-background rounded-full"></div>
+</div>
+</div>
+<!-- Node 2: Imputation -->
+<div class="w-48 p-4 glass-panel rounded-xl relative hover:scale-105 transition-transform cursor-pointer group">
+<div class="absolute inset-0 bg-secondary-container/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-2 mb-2 relative">
+<span class="material-symbols-outlined text-secondary">healing</span>
+<span class="text-label-sm font-bold uppercase tracking-wider">Imputation</span>
+</div>
+<p class="text-[12px] text-on-surface-variant relative">Strategy: Median Fill</p>
+<div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center">
+<div class="w-2 h-2 bg-background rounded-full"></div>
+</div>
+<div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center">
+<div class="w-2 h-2 bg-background rounded-full"></div>
+</div>
+</div>
+<!-- Node 3: Scaling -->
+<div class="w-48 p-4 glass-panel rounded-xl relative border-tertiary-container/30">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-tertiary">straighten</span>
+<span class="text-label-sm font-bold uppercase tracking-wider">Scaling</span>
+</div>
+<p class="text-[12px] text-on-surface-variant">MinMax [0, 1]</p>
+<div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-tertiary-container flex items-center justify-center">
+<div class="w-2 h-2 bg-background rounded-full"></div>
+</div>
+<div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-tertiary-container flex items-center justify-center">
+<div class="w-2 h-2 bg-background rounded-full"></div>
+</div>
+</div>
+<!-- Node 4: Output -->
+<div class="w-48 p-4 glass-panel rounded-xl border-dashed border-primary/40 opacity-70">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-on-surface-variant">output</span>
+<span class="text-label-sm font-bold uppercase tracking-wider">Output</span>
+</div>
+<p class="text-[12px] text-on-surface-variant">Ready for Training</p>
+<div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-outline flex items-center justify-center">
+<div class="w-2 h-2 bg-background rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Agent Recommendations (4/12) -->
+<div class="lg:col-span-4 flex flex-col gap-panel-gap">
+<div class="glass-panel p-6 rounded-xl flex-1">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<h3 class="font-headline-md text-[18px]">Agent Insights</h3>
+</div>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container-high/50 rounded-lg border-l-4 border-secondary">
+<h4 class="text-label-sm font-bold text-secondary mb-1">DATA LEAKAGE ALERT</h4>
+<p class="text-body-md text-[14px]">I've detected timestamps that might be causing target leakage. Recommend removing `Session_End_Time` before training.</p>
+<button class="mt-3 text-primary text-[12px] font-bold flex items-center gap-1 hover:underline">Apply Recommendation <span class="material-symbols-outlined text-[14px]">arrow_forward</span></button>
+</div>
+<div class="p-4 bg-surface-container-high/50 rounded-lg border-l-4 border-tertiary">
+<h4 class="text-label-sm font-bold text-tertiary mb-1">SKEWNESS DETECTED</h4>
+<p class="text-body-md text-[14px]">`Annual_Spend` has a skewness coefficient of 4.2. Log-transformation is highly suggested.</p>
+<button class="mt-3 text-primary text-[12px] font-bold flex items-center gap-1 hover:underline">Fix Skewness <span class="material-symbols-outlined text-[14px]">arrow_forward</span></button>
+</div>
+<div class="p-4 bg-surface-container-high/50 rounded-lg border-l-4 border-primary">
+<h4 class="text-label-sm font-bold text-primary mb-1">ENCODING OPTIMIZATION</h4>
+<p class="text-body-md text-[14px]">`User_City` has high cardinality (500+). Target encoding will perform better than One-Hot.</p>
+<button class="mt-3 text-primary text-[12px] font-bold flex items-center gap-1 hover:underline">Apply Encoding <span class="material-symbols-outlined text-[14px]">arrow_forward</span></button>
+</div>
+</div>
+</div>
+<!-- Mini Feature Ranker -->
+<div class="glass-panel p-6 rounded-xl h-64 overflow-hidden flex flex-col">
+<h3 class="text-label-sm font-bold text-on-surface-variant uppercase tracking-widest mb-4">Feature Importance</h3>
+<div class="flex-1 flex flex-col justify-between">
+<div class="space-y-3">
+<div class="flex items-center gap-4">
+<span class="text-[11px] font-mono-code w-24 truncate">Session_Len</span>
+<div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[92%] rounded-full shadow-[0_0_8px_rgba(192,193,255,0.4)]"></div>
+</div>
+<span class="text-[11px] font-mono-code">0.92</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-[11px] font-mono-code w-24 truncate">Prev_Churn</span>
+<div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[78%] rounded-full opacity-80"></div>
+</div>
+<span class="text-[11px] font-mono-code">0.78</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-[11px] font-mono-code w-24 truncate">Support_Ticks</span>
+<div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[65%] rounded-full opacity-60"></div>
+</div>
+<span class="text-[11px] font-mono-code">0.65</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-[11px] font-mono-code w-24 truncate">User_Age</span>
+<div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[42%] rounded-full opacity-40"></div>
+</div>
+<span class="text-[11px] font-mono-code">0.42</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Comparison Tables (Bottom) -->
+<div class="glass-panel rounded-xl overflow-hidden mb-gutter">
+<div class="flex items-center justify-between p-4 border-b border-white/5 bg-surface-container-high/30">
+<div class="flex items-center gap-6">
+<h3 class="font-headline-md text-[18px]">Data Comparison</h3>
+<div class="flex rounded-lg bg-surface-container p-1">
+<button class="px-3 py-1 text-label-sm font-bold bg-surface-container-high text-primary rounded shadow-sm">Before vs After</button>
+<button class="px-3 py-1 text-label-sm font-bold text-on-surface-variant hover:text-on-surface">Statistical Drift</button>
+</div>
+</div>
+<button class="flex items-center gap-2 px-3 py-1.5 glass-panel rounded-lg text-label-sm hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                            Export Preview
+                        </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="p-4 text-label-sm font-bold text-on-surface-variant border-b border-white/5">Row ID</th>
+<th class="p-4 text-label-sm font-bold text-on-surface-variant border-b border-white/5">Feature: Annual_Spend (Raw)</th>
+<th class="p-4 text-label-sm font-bold text-primary border-b border-white/5">Feature: Annual_Spend (Scaled)</th>
+<th class="p-4 text-label-sm font-bold text-on-surface-variant border-b border-white/5">Feature: User_ID (Raw)</th>
+<th class="p-4 text-label-sm font-bold text-primary border-b border-white/5">Feature: User_Cluster (Engineered)</th>
+<th class="p-4 text-label-sm font-bold text-on-surface-variant border-b border-white/5">Status</th>
+</tr>
+</thead>
+<tbody class="text-body-md text-[14px]">
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-4 font-mono-code text-on-surface-variant">#9281</td>
+<td class="p-4">12,450.00</td>
+<td class="p-4 text-primary font-bold">0.842</td>
+<td class="p-4 font-mono-code">u_4812_ax</td>
+<td class="p-4 font-bold text-secondary">High-Value</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase font-bold border border-primary/20">Clean</span>
+</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-4 font-mono-code text-on-surface-variant">#9282</td>
+<td class="p-4 text-error">NULL</td>
+<td class="p-4 text-primary font-bold italic">0.412 (Imputed)</td>
+<td class="p-4 font-mono-code">u_1002_bz</td>
+<td class="p-4 font-bold text-secondary">Churn-Risk</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary text-[10px] uppercase font-bold border border-tertiary-container/20">Imputed</span>
+</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-4 font-mono-code text-on-surface-variant">#9283</td>
+<td class="p-4">450.00</td>
+<td class="p-4 text-primary font-bold">0.125</td>
+<td class="p-4 font-mono-code">u_9921_kl</td>
+<td class="p-4 font-bold text-secondary">Standard</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase font-bold border border-primary/20">Clean</span>
+</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-4 font-mono-code text-on-surface-variant">#9284</td>
+<td class="p-4">25,890.00</td>
+<td class="p-4 text-primary font-bold">0.991</td>
+<td class="p-4 font-mono-code">u_0032_pp</td>
+<td class="p-4 font-bold text-secondary">High-Value</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase font-bold border border-primary/20">Clean</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) - Contextual for Workflow -->
+<button class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-primary text-on-primary shadow-2xl glow-primary flex items-center justify-center group active:scale-90 transition-all z-50">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform">auto_fix_high</span>
+<span class="absolute right-16 bg-surface-container text-primary px-4 py-2 rounded-lg text-label-sm font-bold opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all pointer-events-none whitespace-nowrap border border-primary/20">Auto-Apply Pipeline</span>
+</button>
+</div>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Simple hover effect for "Active Node" feel
+        document.querySelectorAll('.glass-panel').forEach(panel => {
+            panel.addEventListener('mousemove', (e) => {
+                const rect = panel.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                panel.style.setProperty('--mouse-x', `${x}px`);
+                panel.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+        
+        // Simulating Agent analysis trigger
+        setTimeout(() => {
+            console.log("MLCopilot: Performing deep scan on features...");
+        }, 2000);
+    </script>
+</body></html>
