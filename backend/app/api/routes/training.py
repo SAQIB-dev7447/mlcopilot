@@ -3,25 +3,26 @@ import shutil
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
-from app.services.dataset_service import analyze_dataset
 from app.services.file_service import create_safe_upload_path
+from app.services.training_service import train_classification_pipeline
 
 
 router = APIRouter(
-    prefix="/api/dataset",
-    tags=["Dataset"],
+    prefix="/api/train",
+    tags=["Training"],
 )
 
 
 UPLOAD_DIR = Path("data/uploads")
 
 
-@router.post("/analyze")
-async def analyze_uploaded_dataset(
+@router.post("/classification")
+async def train_classification(
     file: UploadFile = File(...),
 ):
     """
-    Upload a CSV file and return an automatic dataset analysis.
+    Upload a CSV dataset and run the automated
+    classification training pipeline.
     """
 
     if not file.filename:
@@ -45,11 +46,13 @@ async def analyze_uploaded_dataset(
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        analysis = analyze_dataset(str(file_path))
+        results = train_classification_pipeline(
+            str(file_path)
+        )
 
         return {
             "filename": file.filename,
-            "analysis": analysis,
+            "results": results,
         }
 
     except ValueError as exc:
@@ -61,7 +64,10 @@ async def analyze_uploaded_dataset(
     except Exception as exc:
         raise HTTPException(
             status_code=400,
-            detail=f"Could not analyze dataset: {str(exc)}",
+            detail=(
+                "Could not train classification models: "
+                f"{str(exc)}"
+            ),
         )
 
     finally:
