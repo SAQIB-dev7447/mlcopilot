@@ -1,8 +1,9 @@
 from pathlib import Path
 import shutil
 
-from fastapi import APIRouter, File, UploadFile, HTTPException
+from fastapi import APIRouter, File, HTTPException, UploadFile
 
+from app.services.file_service import create_safe_upload_path
 from app.services.training_service import train_classification_pipeline
 
 
@@ -13,15 +14,22 @@ router = APIRouter(
 
 
 UPLOAD_DIR = Path("data/uploads")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @router.post("/classification")
-async def train_classification(file: UploadFile = File(...)):
+async def train_classification(
+    file: UploadFile = File(...),
+):
     """
     Upload a CSV dataset and run the automated
     classification training pipeline.
     """
+
+    if not file.filename:
+        raise HTTPException(
+            status_code=400,
+            detail="A filename is required.",
+        )
 
     if not file.filename.lower().endswith(".csv"):
         raise HTTPException(
@@ -29,9 +37,12 @@ async def train_classification(file: UploadFile = File(...)):
             detail="Only CSV files are supported.",
         )
 
-    file_path = UPLOAD_DIR / file.filename
-
     try:
+        file_path = create_safe_upload_path(
+            UPLOAD_DIR,
+            file.filename,
+        )
+
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
@@ -44,10 +55,19 @@ async def train_classification(file: UploadFile = File(...)):
             "results": results,
         }
 
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        )
+
     except Exception as exc:
         raise HTTPException(
             status_code=400,
-            detail=f"Could not train classification models: {str(exc)}",
+            detail=(
+                "Could not train classification models: "
+                f"{str(exc)}"
+            ),
         )
 
     finally:

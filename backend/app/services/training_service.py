@@ -9,17 +9,20 @@ from app.services.training_data_service import (
 )
 
 
-def train_classification_pipeline(file_path: str) -> dict:
+def train_classification_pipeline(
+    file_path: str,
+) -> dict:
     """
     Run the complete automated classification pipeline.
 
     Steps:
-        1. Load and prepare the dataset.
+        1. Load and validate the dataset.
         2. Detect the target column.
-        3. Split data into training and testing sets.
-        4. Train multiple classification models.
-        5. Evaluate all models.
-        6. Select the best model automatically.
+        3. Remove unusable constant features.
+        4. Split data into training and testing sets.
+        5. Train multiple classification models.
+        6. Evaluate all models.
+        7. Select the best model automatically.
 
     Args:
         file_path: Path to the CSV dataset.
@@ -42,9 +45,17 @@ def train_classification_pipeline(file_path: str) -> dict:
     )
 
     return {
+        "task": "classification",
         "target_column": training_data["target_column"],
-        "training_rows": len(training_data["X_train"]),
-        "testing_rows": len(training_data["X_test"]),
+        "target_detection_method": training_data[
+            "target_detection_method"
+        ],
+        "features_used": training_data["training_features"],
+        "training_rows": training_data["training_rows"],
+        "testing_rows": training_data["testing_rows"],
+        "models_evaluated": list(
+            evaluation["models"].keys()
+        ),
         "models": evaluation["models"],
         "best_model": evaluation["best_model"],
         "best_metrics": evaluation["best_metrics"],
