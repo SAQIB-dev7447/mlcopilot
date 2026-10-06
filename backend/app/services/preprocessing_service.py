@@ -3,29 +3,36 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import (
+    OneHotEncoder,
+    StandardScaler,
+)
+
+
+HIGH_CARDINALITY_THRESHOLD = 0.50
+MIN_CATEGORY_FREQUENCY = 10
+MAX_CATEGORIES = 100
 
 
 def build_preprocessor(
     df: pd.DataFrame,
 ) -> ColumnTransformer:
     """
-    Build an automatic preprocessing pipeline based on
-    the columns detected in the dataset.
+    Build an automatic preprocessing pipeline.
 
     Numerical columns:
-        - Missing values are replaced with the median.
-        - Values are standardized using StandardScaler.
+        - Missing values → median
+        - Standard scaling
 
     Categorical columns:
-        - Missing values are replaced with the most frequent value.
-        - Categories are converted to numerical values using OneHotEncoder.
+        - Missing values → most frequent
+        - Rare categories grouped
+        - Maximum number of encoded categories limited
+        - Sparse one-hot encoding
 
-    Args:
-        df: Input dataset.
-
-    Returns:
-        A fitted-ready ColumnTransformer.
+    Extremely high-cardinality categorical columns are excluded
+    because they are commonly identifiers such as customer IDs,
+    transaction IDs, emails, or other unique values.
     """
 
     numerical_columns = df.select_dtypes(
@@ -36,21 +43,43 @@ def build_preprocessor(
         include=["object", "category", "bool"]
     ).columns.tolist()
 
+    usable_categorical_columns = []
+
+    for column in categorical_columns:
+        unique_ratio = (
+            df[column].nunique(dropna=True)
+            / max(len(df), 1)
+        )
+
+        if unique_ratio < HIGH_CARDINALITY_THRESHOLD:
+            usable_categorical_columns.append(column)
+
     numerical_pipeline = Pipeline(
         steps=[
-            ("imputer", SimpleImputer(strategy="median")),
-            ("scaler", StandardScaler()),
+            (
+                "imputer",
+                SimpleImputer(strategy="median"),
+            ),
+            (
+                "scaler",
+                StandardScaler(),
+            ),
         ]
     )
 
     categorical_pipeline = Pipeline(
         steps=[
-            ("imputer", SimpleImputer(strategy="most_frequent")),
+            (
+                "imputer",
+                SimpleImputer(strategy="most_frequent"),
+            ),
             (
                 "encoder",
                 OneHotEncoder(
                     handle_unknown="ignore",
-                    sparse_output=False,
+                    sparse_output=True,
+                    min_frequency=MIN_CATEGORY_FREQUENCY,
+                    max_categories=MAX_CATEGORIES,
                 ),
             ),
         ]
@@ -67,12 +96,12 @@ def build_preprocessor(
             )
         )
 
-    if categorical_columns:
+    if usable_categorical_columns:
         transformers.append(
             (
                 "categorical",
                 categorical_pipeline,
-                categorical_columns,
+                usable_categorical_columns,
             )
         )
 
